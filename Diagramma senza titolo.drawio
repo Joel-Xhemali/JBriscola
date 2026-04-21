@@ -1,0 +1,22 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0" version="29.3.2">
+  <diagram name="Pagina-1" id="WEYpVtzsKzVmuBql8V3A">
+    <mxGraphModel dx="783" dy="528" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="gzj8RmYAhp_VWRm4ZWYR-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(#CDEB8B,#E4FF93);strokeColor=#36393d;fillStyle=auto;" value="" vertex="1">
+          <mxGeometry height="370" width="440" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="gzj8RmYAhp_VWRm4ZWYR-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontStyle=1;fontColor=light-dark(#000000,#E4FF93);fontSize=17;" value="Model" vertex="1">
+          <mxGeometry height="30" width="90" x="360" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gzj8RmYAhp_VWRm4ZWYR-3" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&quot;margin: 4px 0px 0px; text-align: center; text-decoration: underline;&quot;&gt;&lt;b&gt;&lt;i&gt;&amp;lt;&amp;lt;Enum&amp;gt;&amp;gt;&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin: 4px 0px 0px; text-align: center; text-decoration-color: currentcolor;&quot;&gt;&lt;b&gt;Seme&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;BASTONI&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;COPPE&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;DENARI&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;SPADE&lt;/p&gt;" vertex="1">
+          <mxGeometry height="110" width="110" x="60" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="gzj8RmYAhp_VWRm4ZWYR-4" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&quot;margin: 4px 0px 0px; text-align: center; text-decoration: underline;&quot;&gt;&lt;b&gt;&lt;i&gt;&amp;lt;&amp;lt;Enum&amp;gt;&amp;gt;&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin: 4px 0px 0px; text-align: center; text-decoration-color: currentcolor;&quot;&gt;&lt;b&gt;Valore&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;ASSO = 1&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;DUE&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;TRE&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;QUATTRO&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;CINQUE&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;SEI&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;SETTE&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;FANTE&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;CAVALLO&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;RE&lt;/p&gt;" vertex="1">
+          <mxGeometry height="200" width="150" x="180" y="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
