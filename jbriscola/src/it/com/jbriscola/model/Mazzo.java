@@ -59,4 +59,20 @@ public class Mazzo {
     public Carta pesca(){
         return carte.removeFirst();
     }
+
+    public List<Carta> pescaCarte(){
+        List<Carta> mano = new ArrayList<>(3);
+        for(int i=0; i<3;i++){
+            mano.add(carte.removeFirst());
+        }
+        return mano;
+    }
+
+    @Override
+    public String toString() {
+        return "Mazzo{" +
+                carte.size() +
+                " carte=" + carte +
+                '}';
+    }
 }

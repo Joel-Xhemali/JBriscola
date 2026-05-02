@@ -5,12 +5,17 @@ package it.com.jbriscola.model;
  */
 public class Carta {
 
-    Seme seme;
-    Valore valore;
+    private Seme seme;
+    private Valore valore;
+    private int punto;
+    private String pathCarta;
+
+    private static final String PATH_CARTE = "assets/carte/";
 
     public Carta(Seme seme, Valore valore) {
         this.seme = seme;
         this.valore = valore;
+        pathCarta = getPathCarta();
     }
 
     public Seme getSeme() {
@@ -29,7 +34,20 @@ public class Carta {
         this.valore = valore;
     }
 
-    public int getPuntiCarta(){
+    public int getPuntiCarta() {
         return valore.getPunti();
+    }
+
+    public String getPathCarta() {
+        return PATH_CARTE + valore.name() + "_" + seme.name() + ".png";
+    }
+
+    @Override
+    public String toString() {
+        return "Carta{" +
+                "seme=" + seme +
+                ", valore=" + valore +
+                ", path=" + pathCarta +
+                '}';
     }
 }

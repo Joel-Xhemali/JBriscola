@@ -8,10 +8,12 @@ import java.util.List;
 public abstract class Giocatore {
     private String nome;
     private List<Carta> mano;
+    private String avatar;
 
-    public Giocatore(String nome, List<Carta> mano) {
+    public Giocatore(String nome, String avatar, List<Carta> mano) {
         this.nome = nome;
         this.mano = mano;
+        this.avatar = avatar;
     }
 
     public String getNome() {
@@ -28,5 +30,20 @@ public abstract class Giocatore {
 
     public void setMano(List<Carta> mano) {
         this.mano = mano;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    @Override
+    public String toString() {
+        return "nome='" + nome + '\'' +
+                ", mano=" + mano +
+                ", avatar='" + avatar + '\'';
     }
 }

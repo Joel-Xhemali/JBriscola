@@ -8,14 +8,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Classe che gestisce i nominativi dei bot
  */
 public class GestoreNomiBot {
 
-    private final String PERCORSO = "/it/com/jbriscola/assets/nomiBot.txt";
+    private final String PERCORSO = "/assets/nomiBot.txt";
     private final List<String> nomiInMemoria;
 
     public GestoreNomiBot() {
