@@ -80,6 +80,10 @@ public class PartitaBriscola extends Observable {
         this.punti = punti;
     }
 
+    public List<Carta> getCarteSulTavolo() {
+        return carteSulTavolo;
+    }
+
     public void scarta(Giocatore giocatore, Carta carta){
         giocatore.getMano().remove(carta);
         carteSulTavolo.add(carta);
