@@ -1,9 +1,13 @@
 package it.com.jbriscola.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+
 /**
  * Classe che rappresenta la singola partita
  */
-public class PartitaBriscola {
+public class PartitaBriscola extends Observable {
 
     public enum StatoPartita {IN_CORSO, TERMINATA, PERSA, VINTA}
 
@@ -15,6 +19,8 @@ public class PartitaBriscola {
     private Giocatore botNemico1;
     private Giocatore botNemico2;
     private int punti;
+
+    private List<Carta> carteSulTavolo;
 
     public PartitaBriscola(GiocoBriscola gioco, Umano giocatore) {
         this.gioco = gioco;
@@ -32,7 +38,7 @@ public class PartitaBriscola {
         // Setting Partita
         stato = StatoPartita.IN_CORSO;
         punti = 0;
-
+        carteSulTavolo = new ArrayList<>(4);
     }
 
     public GiocoBriscola getGioco() {
@@ -47,48 +53,23 @@ public class PartitaBriscola {
         return stato;
     }
 
-    public void setStato(StatoPartita stato) {
-        this.stato = stato;
-    }
-
-    public Mazzo getMazzo() {
-        return mazzo;
-    }
-
-    public void setMazzo(Mazzo mazzo) {
-        this.mazzo = mazzo;
-    }
-
     public Giocatore getGiocatore() {
         return giocatore;
     }
 
-    public void setGiocatore(Giocatore giocatore) {
-        this.giocatore = giocatore;
-    }
 
     public Giocatore getBotAlleato() {
         return botAlleato;
     }
 
-    public void setBotAlleato(Giocatore botAlleato) {
-        this.botAlleato = botAlleato;
-    }
 
     public Giocatore getBotNemico1() {
         return botNemico1;
     }
 
-    public void setBotNemico1(Giocatore botNemico1) {
-        this.botNemico1 = botNemico1;
-    }
 
     public Giocatore getBotNemico2() {
         return botNemico2;
-    }
-
-    public void setBotNemico2(Giocatore botNemico2) {
-        this.botNemico2 = botNemico2;
     }
 
     public int getPunti() {
@@ -99,8 +80,13 @@ public class PartitaBriscola {
         this.punti = punti;
     }
 
-    public String getParola() {
-        return null;
-    }
+    public void scarta(Giocatore giocatore, Carta carta){
+        giocatore.getMano().remove(carta);
+        carteSulTavolo.add(carta);
 
+        // [Qui in futuro implementerai la logica: siamo a 4 carte? Chi vince la presa?]
+
+        setChanged();
+        notifyObservers();
+    }
 }

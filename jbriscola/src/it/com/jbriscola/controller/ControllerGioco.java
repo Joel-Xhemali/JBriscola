@@ -1,13 +1,12 @@
 package it.com.jbriscola.controller;
 
-import it.com.jbriscola.model.Giocatore;
-import it.com.jbriscola.model.GiocoBriscola;
-import it.com.jbriscola.model.Umano;
+import it.com.jbriscola.model.*;
 import it.com.jbriscola.view.FinestraGioco;
 import it.com.jbriscola.view.Pannello;
 import it.com.jbriscola.view.Pannello.TipoPannello;
 import it.com.jbriscola.view.PannelloGioco;
 
+import java.util.List;
 import java.util.Optional;
 
 public class ControllerGioco {
@@ -69,6 +68,7 @@ public class ControllerGioco {
         }
 
         model.iniziaPartita(giocatore);
+        PartitaBriscola nuovaPartita = model.getPartitaCorrente().get();
         vista.setPannelloGioco(model.getPartitaCorrente().get().getGiocatore(),
                 model.getPartitaCorrente().get().getBotAlleato(),
                 model.getPartitaCorrente().get().getBotNemico1(),
@@ -79,7 +79,8 @@ public class ControllerGioco {
          * sconfitta) sono registrati come observer del modello del gioco (i pannelli
          * esito riportano le statistiche delle partite precedenti)
          */
-        model.addObserver(vista.getPannelloGioco().get());
+//        model.addObserver(vista.getPannelloGioco().get());
+        nuovaPartita.addObserver(vista.getPannelloGioco().get());
 //        model.addObserver(vista.getPannelloGioco().get().getPannelloVittoria());
 //        model.addObserver(vista.getPannelloGioco().get().getPannelloSconfitta());
     }
@@ -95,6 +96,14 @@ public class ControllerGioco {
 
         p.getBottoneMenu().addActionListener(e -> cambiaSchermata(Pannello.TipoPannello.MENU));
 
+        p.getBottoneConferma().addActionListener(e -> {
+            if (p.getCartaSelezionata() != null) {
+                // 1. Il controller passa l'ordine alla partita corrente
+                PartitaBriscola partita = model.getPartitaCorrente().get();
+
+                partita.scarta(partita.getGiocatore(), p.getCartaSelezionata());
+            }
+        });
         /*
          * al clic di un bottone con una lettera, essa viene aggiunta alle lettere usate
          * nel modello
