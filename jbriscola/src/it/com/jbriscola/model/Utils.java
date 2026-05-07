@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class Utils {
     public static final String PATH_AVATAR = "assets/avatar/";
@@ -15,8 +14,11 @@ public class Utils {
     public static final String PATH_RETRO_CARTA = "assets/retro_carta.png";
 
     /**
-     * Metodo che Legge la cartella "asset/avatar"
-     * @return il path di un Avatar random
+     * Metodo che legge la cartella "assets/avatar" e restituisce un avatar casuale.
+     * Utilizza Java Streams per estrarre casualmente un percorso valido.
+     * Complessità computazionale: O(F) dove F è il numero di file presenti nella directory.
+     *
+     * @return il path di un Avatar generato casualmente.
      */
     public static String getPathAvatar(){
         File folder = new File(PATH_AVATAR);
@@ -33,13 +35,16 @@ public class Utils {
         return random.ints(0, avatars.size()) // Genera un flusso infinito di indici
                 .distinct()              // Assicura che siano unici
                 .mapToObj(avatars::get)  // Prendi il nome corrispondente
-                .findFirst().get();     // Ritorna il
+                .findFirst().get();     // Ritorna il primo
     }
 
     /**
-     * Metodo per estrarre casualmente il nome del bot caricato da file
+     * Metodo per estrarre casualmente un nome da assegnare al bot.
+     * Legge un file di testo contenente i nomi utilizzando il costrutto try-with-resources
+     * e un flusso Stream.
+     * Complessità computazionale: O(N) dove N è il numero di righe all'interno del file.
      *
-     * @return Il nome del bot
+     * @return Il nome estratto per il bot (o un nome di fallback in caso di errore I/O).
      */
     public static String estraiNome() {
         List<String> nomiBot;

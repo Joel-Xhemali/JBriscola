@@ -1,18 +1,27 @@
 package it.com.jbriscola.controller;
 
-import it.com.jbriscola.model.*;
+import it.com.jbriscola.model.Giocatore;
+import it.com.jbriscola.model.GiocoBriscola;
+import it.com.jbriscola.model.Umano;
 import it.com.jbriscola.view.FinestraGioco;
 import it.com.jbriscola.view.Pannello;
 import it.com.jbriscola.view.Pannello.TipoPannello;
-import it.com.jbriscola.view.PannelloGioco;
 
-import java.util.List;
-import java.util.Optional;
-
+@SuppressWarnings("deprecation")
 public class ControllerGioco {
-    private GiocoBriscola model;
-    private FinestraGioco vista;
+    private final GiocoBriscola model;
+    private final FinestraGioco vista;
 
+    /**
+     * Costruttore del Controller. Collega il Model e la View, inizializzando
+     * gli observer e i listener per i bottoni dell'interfaccia grafica.
+     * Implementa il pattern Observer per disaccoppiare Model e View.
+     * Complessità computazionale: O(1) per l'impostazione, ma l'aggiunta di listener
+     * è costante per ogni componente.
+     *
+     * @param gioco Il modello (Model) del gioco.
+     * @param finestra La finestra principale (View) dell'applicazione.
+     */
     public ControllerGioco(GiocoBriscola gioco, FinestraGioco finestra) {
         model = gioco;
         vista = finestra;
@@ -50,7 +59,7 @@ public class ControllerGioco {
 
         vista.getPannelloGiocatore().getBottoneConferma()
                 .addActionListener(e -> {
-                    Giocatore giocatore = new Umano(vista.getPannelloGiocatore().getNickname(), vista.getPannelloGiocatore().getPathAvatarSelezionato());
+                    var giocatore = new Umano(vista.getPannelloGiocatore().getNickname(), vista.getPannelloGiocatore().getPathAvatarSelezionato());
                     inizializzaPartita(giocatore);
                     inizializzaBottoniGioco();
                     cambiaSchermata(TipoPannello.GIOCO);
@@ -60,74 +69,56 @@ public class ControllerGioco {
     private void inizializzaPartita(Giocatore giocatore) {
 
         // una eventuale partita già in corso viene sovrascritta
-        Optional<PannelloGioco> vecchio = vista.getPannelloGioco();
-        if (vecchio.isPresent()) {
-            model.deleteObserver(vecchio.get());
-//            model.deleteObserver(vecchio.get().getPannelloVittoria());
-//            model.deleteObserver(vecchio.get().getPannelloSconfitta());
-        }
+        vista.getPannelloGioco().ifPresent(model::deleteObserver);
 
         model.iniziaPartita(giocatore);
-        PartitaBriscola nuovaPartita = model.getPartitaCorrente().get();
-        vista.setPannelloGioco(model.getPartitaCorrente().get().getGiocatore(),
-                model.getPartitaCorrente().get().getBotAlleato(),
-                model.getPartitaCorrente().get().getBotNemico1(),
-                model.getPartitaCorrente().get().getBotNemico2());
+        
+        // Evitiamo chiamate nude al .get() di un Optional: si usa ifPresent
+        model.getPartitaCorrente().ifPresent(nuovaPartita -> {
+            vista.setPannelloGioco(
+                    nuovaPartita.getGiocatore(),
+                    nuovaPartita.getBotNemico1(),
+                    nuovaPartita.getBotAlleato(),
+                    nuovaPartita.getBotNemico2()
+            );
 
-        /*
-         * il pannello della partita e i pannelli per mostrare il suo esito (vittoria o
-         * sconfitta) sono registrati come observer del modello del gioco (i pannelli
-         * esito riportano le statistiche delle partite precedenti)
-         */
-//        model.addObserver(vista.getPannelloGioco().get());
-        nuovaPartita.addObserver(vista.getPannelloGioco().get());
-//        model.addObserver(vista.getPannelloGioco().get().getPannelloVittoria());
-//        model.addObserver(vista.getPannelloGioco().get().getPannelloSconfitta());
+            vista.getPannelloGioco().ifPresent(nuovaPartita::addObserver);
+            
+            // Innesca i turni dei bot nel caso in cui il Random iniziale non abbia scelto l'Umano (0)
+            nuovaPartita.eseguiTurniBot();
+        });
     }
 
     private void inizializzaBottoniGioco() {
 
         /*
-         * qui non ci si preoccupa di gestire eventuali errori di Optional vuoto perché
-         * il metodo è privato e chiamato solo dopo l'inizializzazione di una partita (e
-         * la creazione di un pannello gioco)
+         * Eseguiamo il blocco in sicurezza usando l'operatore funzionale ifPresent
          */
-        PannelloGioco p = vista.getPannelloGioco().get();
-
-        p.getBottoneMenu().addActionListener(e -> cambiaSchermata(Pannello.TipoPannello.MENU));
-
-        p.getBottoneConferma().addActionListener(e -> {
-            if (p.getCartaSelezionata() != null) {
-                // 1. Il controller passa l'ordine alla partita corrente
-                PartitaBriscola partita = model.getPartitaCorrente().get();
-
-                partita.scarta(partita.getGiocatore(), p.getCartaSelezionata());
-            }
+        vista.getPannelloGioco().ifPresent(p -> {
+            p.getBottoneMenu().addActionListener(e -> cambiaSchermata(Pannello.TipoPannello.MENU));
+    
+            p.getBottoneConferma().addActionListener(e -> {
+                var cartaSelezionata = p.getCartaSelezionata();
+                if (cartaSelezionata != null) {
+                    model.getPartitaCorrente().ifPresent(partita -> {
+                        // Disabilita immediatamente il bottone per impedire input doppi 
+                        // mentre il model esegue lo scarto e passa il turno al botNemico1
+                        p.getBottoneConferma().setEnabled(false);
+                        
+                        partita.scarta(partita.getGiocatore(), cartaSelezionata);
+                    });
+                }
+            });
         });
-        /*
-         * al clic di un bottone con una lettera, essa viene aggiunta alle lettere usate
-         * nel modello
-         */
-//        p.getBottoniLettere().forEach(
-//                (c, b) -> b.addActionListener(e -> modello.getPartitaCorrente().get().aggiungiLetteraUsata(c)));
 
-        /*
-         * al clic del bottone "Nuova parola" in un pannello esito (vittoria /
-         * sconfitta) si crea una nuova partita e un nuovo pannello gioco
-         */
-//        for (PannelloEsito x : List.of(p.getPannelloVittoria(), p.getPannelloSconfitta())) {
-//            x.getBottoneNuovaParola().addActionListener(e -> {
-//                inizializzaPartita();
-//                inizializzaBottoniGioco();
-//                cambiaSchermata(Pannello.TipoPannello.GIOCO);
-//            });
-//        }
     }
 
     /**
-     * Metodo per visualizzare una determinata schermata del Gioco
+     * Metodo per visualizzare una determinata schermata del Gioco.
+     * Utilizza il CardLayout della FinestraGioco per mostrare il pannello corretto.
+     * Complessità computazionale: O(1), le operazioni di Swing sono considerate costanti.
      *
-     * @param schermata del pannello da visualizzare
+     * @param schermata il TipoPannello del pannello da visualizzare.
      */
     public void cambiaSchermata(TipoPannello schermata) {
         vista.visualizzaPannello(schermata);

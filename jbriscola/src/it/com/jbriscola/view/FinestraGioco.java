@@ -11,10 +11,10 @@ public class FinestraGioco extends JFrame {
 
     public final static String TITOLO = "JBriscola";
 
-    private JPanel pannelloGenerale;
-    private PannelloMenu pannelloMenu;
-    private PannelloStatistiche pannelloStatistiche;
-    private PannelloGiocatore pannelloGiocatore;
+    private final JPanel pannelloGenerale;
+    private final PannelloMenu pannelloMenu;
+    private final PannelloStatistiche pannelloStatistiche;
+    private final PannelloGiocatore pannelloGiocatore;
     private Optional<PannelloGioco> pannelloGioco;
 
     public FinestraGioco() {
@@ -23,15 +23,13 @@ public class FinestraGioco extends JFrame {
         pannelloMenu = new PannelloMenu();
         pannelloStatistiche = new PannelloStatistiche();
         pannelloGiocatore = new PannelloGiocatore();
-        pannelloGioco = Optional.ofNullable(null);
+        pannelloGioco = Optional.empty();
 
-        pannelloGenerale = new JPanel(new CardLayout()) {
-            {
-                add(pannelloMenu, TipoPannello.MENU.name());
-                add(pannelloStatistiche, TipoPannello.STATISTICHE.name());
-                add(pannelloGiocatore, TipoPannello.GIOCATORE.name());
-            }
-        };
+        // Risolto anti-pattern "Double Brace Initialization"
+        pannelloGenerale = new JPanel(new CardLayout());
+        pannelloGenerale.add(pannelloMenu, TipoPannello.MENU.name());
+        pannelloGenerale.add(pannelloStatistiche, TipoPannello.STATISTICHE.name());
+        pannelloGenerale.add(pannelloGiocatore, TipoPannello.GIOCATORE.name());
 
         add(pannelloGenerale);
 

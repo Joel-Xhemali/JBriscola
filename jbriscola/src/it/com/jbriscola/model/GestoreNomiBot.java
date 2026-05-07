@@ -17,13 +17,20 @@ public class GestoreNomiBot {
     private final String PERCORSO = "/assets/nomiBot.txt";
     private final List<String> nomiInMemoria;
 
+    /**
+     * Costruttore della classe GestoreNomiBot.
+     * Inizializza la lista in memoria e carica i nomi dal file specificato.
+     * Complessità computazionale: O(N) dove N è il numero di linee nel file di testo.
+     */
     public GestoreNomiBot() {
         this.nomiInMemoria = new ArrayList<>();
         caricaDalClasspath();
     }
 
     /**
-     * Legge e salva i nomi dal file assets/nomiBot.txt
+     * Legge e salva i nomi dal file assets/nomiBot.txt.
+     * Metodo privato ad uso esclusivo del costruttore.
+     * Complessità computazionale: O(N) dove N è il numero di linee nel file di testo.
      */
     private void caricaDalClasspath() {
         try (InputStream is = getClass().getResourceAsStream(PERCORSO)) {
@@ -53,7 +60,11 @@ public class GestoreNomiBot {
     }
 
     /**
-     * Restituisce e rimuove un nome dall'elenco dei giocatori
+     * Restituisce e rimuove un nome casuale dall'elenco dei nomi precedentemente caricati.
+     * Complessità computazionale: O(N) nel caso peggiore (la rimozione da un ArrayList causa
+     * lo scorrimento degli elementi).
+     *
+     * @return un nome casuale per il bot
      */
     public String ottieniNomeCasuale() {
         Random rand = new Random();

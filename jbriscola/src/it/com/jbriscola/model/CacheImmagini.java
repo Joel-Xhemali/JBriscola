@@ -11,6 +11,15 @@ public class CacheImmagini {
     // La mappa che conserva le immagini già decodificate
     private static final Map<String, BufferedImage> cache = new HashMap<>();
 
+    /**
+     * Recupera un'immagine dal disco o dalla cache. Se l'immagine non è presente in cache,
+     * la carica dal disco e la memorizza. Gestisce eventuali errori di I/O restituendo un'immagine vuota.
+     * Complessità computazionale: O(1) ammortizzato grazie all'uso dell'HashMap. O(L) in caso di cache miss, 
+     * dove L è il tempo di caricamento dal disco.
+     *
+     * @param path il percorso del file immagine da caricare
+     * @return l'immagine richiesta, oppure un'immagine di fallback vuota in caso di errore
+     */
     public static BufferedImage getImmagine(String path) {
         if (!cache.containsKey(path)) {
             try {

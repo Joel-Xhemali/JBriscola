@@ -28,6 +28,13 @@ public class Mazzo {
         mescola();
     }
 
+    /**
+     * Implementa il pattern Singleton. Restituisce l'istanza univoca del mazzo da gioco.
+     * Se l'istanza non esiste, la crea (e mescola le carte).
+     * Complessità computazionale: O(1) in caso di istanza esistente, altrimenti O(N) dove N è il numero di carte.
+     *
+     * @return l'unica istanza di Mazzo
+     */
     public static Mazzo getMazzo(){
         if (instance == null)
             instance = new Mazzo();
@@ -35,7 +42,8 @@ public class Mazzo {
     }
 
     /**
-     * Mescola il mazzo in modo che l'ordine di creazione sia random
+     * Mescola il mazzo scambiando ogni carta con un'altra in posizione casuale.
+     * Complessità computazionale: O(N) dove N è il numero totale di carte nel mazzo (40 iterazioni fisse).
      */
     public void mescola() {
         Random rand = new Random();
@@ -54,12 +62,23 @@ public class Mazzo {
     }
 
     /**
-     * Metodo che ritorna la prima carta del mazzo e la toglie dal mazzo stesso
+     * Estrae la prima carta dalla cima del mazzo e la rimuove.
+     * Complessità computazionale: O(N) nel caso peggiore (la rimozione in testa di un ArrayList comporta lo
+     * scorrimento di tutti gli elementi successivi), ma su N=40 è accettabile.
+     *
+     * @return la carta pescata
      */
     public Carta pesca(){
         return carte.removeFirst();
     }
 
+    /**
+     * Pesca esattamente 3 carte dalla cima del mazzo.
+     * Utile per distribuire le mani iniziali ai giocatori.
+     * Complessità computazionale: O(3 * N), dove N è il numero di carte, semplificabile in O(N).
+     *
+     * @return una lista contenente le tre carte appena pescate
+     */
     public List<Carta> pescaCarte(){
         List<Carta> mano = new ArrayList<>(3);
         for(int i=0; i<3;i++){
@@ -68,6 +87,22 @@ public class Mazzo {
         return mano;
     }
 
+    /**
+     * Verifica se il mazzo è vuoto.
+     * Complessità computazionale: O(1).
+     *
+     * @return true se non ci sono più carte nel mazzo, false altrimenti
+     */
+    public boolean isEmpty(){
+        return carte.isEmpty();
+    }
+
+    /**
+     * Restituisce una rappresentazione testuale del mazzo di carte.
+     * Complessità computazionale: O(N) dove N è il numero di carte rimanenti.
+     *
+     * @return una stringa con la quantità di carte e il loro elenco
+     */
     @Override
     public String toString() {
         return "Mazzo{" +
