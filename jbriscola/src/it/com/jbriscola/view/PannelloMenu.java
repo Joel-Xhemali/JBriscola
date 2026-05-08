@@ -17,10 +17,20 @@ public class PannelloMenu extends Pannello {
     private static String indicazioneStatistiche = "Statistiche";
     private static LayoutManager layout = new GridLayout(1, 2, 40, 0);
 
+    /**
+     * Costruttore base di PannelloMenu. Utilizza la grafica e il layout di default.
+     * Complessità computazionale: O(1).
+     */
     public PannelloMenu() {
         this(GRAFICA_DEFAULT);
     }
 
+    /**
+     * Costruttore completo. Inizializza gli elementi grafici del menu principale.
+     * Complessità computazionale: O(1).
+     *
+     * @param graficaPannello l'oggetto contenente le impostazioni grafiche del pannello.
+     */
     public PannelloMenu(GraficaPannello graficaPannello) {
         super(layout, graficaPannello);
 
@@ -45,22 +55,55 @@ public class PannelloMenu extends Pannello {
         return p;
     }
 
+    /**
+     * Restituisce la label usata per il titolo del gioco.
+     * Complessità computazionale: O(1).
+     *
+     * @return la JLabel del titolo.
+     */
     public JLabel getTitolo() {
         return titolo;
     }
 
+    /**
+     * Restituisce la label usata per l'immagine di sfondo del menu.
+     * Complessità computazionale: O(1).
+     *
+     * @return la JLabel con l'immagine di sfondo.
+     */
     public JLabel getImmagine() {
         return immagine;
     }
 
+    /**
+     * Restituisce il bottone per avviare il gioco.
+     * Complessità computazionale: O(1).
+     *
+     * @return il JButton Gioca.
+     */
     public JButton getBottoneGioco() {
         return bottoneGioco;
     }
 
+    /**
+     * Restituisce il bottone per visualizzare le statistiche.
+     * Complessità computazionale: O(1).
+     *
+     * @return il JButton Statistiche.
+     */
     public JButton getBottoneStatistiche() {
         return bottoneStatistiche;
     }
 
+    /**
+     * Sovrascrive il metodo update del pattern Observer.
+     * Il menu principale non necessita di aggiornamenti dinamici in risposta
+     * agli eventi del Model, pertanto il metodo è vuoto.
+     * Complessità computazionale: O(1).
+     *
+     * @param o l'oggetto Observable che ha notificato un cambiamento.
+     * @param arg argomenti extra (non usati).
+     */
     @Override
     public void update(Observable o, Object arg) {
         // il menù non ha dati da aggiornare

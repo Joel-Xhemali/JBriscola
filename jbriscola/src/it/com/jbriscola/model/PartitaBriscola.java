@@ -275,7 +275,7 @@ public class PartitaBriscola extends Observable {
         notifyObservers();
 
         // Se il giocatore che ha vinto la presa (che deve iniziare la mano successiva) 
-        // è un bot, inneschiamo immediatamente le sue giocate
+        // è un bot, inneschiamo immediatamente le বহুম turni
         if (numeroTurno != 0 && stato == StatoPartita.IN_CORSO) {
             eseguiTurniBot();
         }

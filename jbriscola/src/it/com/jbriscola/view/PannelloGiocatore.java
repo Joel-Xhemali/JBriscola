@@ -25,10 +25,22 @@ public class PannelloGiocatore extends Pannello {
     private static final String PATH = "assets/avatar/";
     private static final String[] FILE_AVATAR = {"gamer.png", "girl.png", "cat.png", "meerkat.png", "panda.png", "rabbit.png"};
 
+    /**
+     * Costruttore base di PannelloGiocatore.
+     * Utilizza la grafica di default e inizializza i componenti grafici.
+     * Complessità computazionale: O(1).
+     */
     public PannelloGiocatore() {
         this(GRAFICA_DEFAULT);
     }
 
+    /**
+     * Costruttore che accetta una grafica personalizzata.
+     * Inizializza i componenti per la creazione del profilo utente.
+     * Complessità computazionale: O(1) per l'impostazione.
+     *
+     * @param grafica la grafica da applicare al pannello.
+     */
     public PannelloGiocatore(GraficaPannello grafica) {
         super(new BorderLayout(20, 20), grafica);
         titolo = grafica.creaTitolo(nomeSchermata);
@@ -124,22 +136,53 @@ public class PannelloGiocatore extends Pannello {
     // --- I GETTER ---
     // Il tuo Controller userà questi metodi per estrarre i dati quando l'utente preme "Conferma"
 
+    /**
+     * Recupera il nickname inserito dall'utente.
+     * Complessità computazionale: O(1).
+     *
+     * @return la stringa contenente il nickname.
+     */
     public String getNickname() {
         return campoNickname.getText().trim();
     }
 
+    /**
+     * Recupera il percorso dell'avatar selezionato dall'utente.
+     * Complessità computazionale: O(1).
+     *
+     * @return il percorso dell'avatar.
+     */
     public String getPathAvatarSelezionato() {
         return pathAvatarSelezionato;
     }
 
+    /**
+     * Restituisce il riferimento al bottone di conferma.
+     * Complessità computazionale: O(1).
+     *
+     * @return il bottone per confermare e giocare.
+     */
     public JButton getBottoneConferma() {
         return bottoneConferma;
     }
 
+    /**
+     * Restituisce il riferimento al bottone per tornare al menù.
+     * Complessità computazionale: O(1).
+     *
+     * @return il bottone menù.
+     */
     public JButton getBottoneMenu() {
         return bottoneMenu;
     }
 
+    /**
+     * Aggiorna lo stato del pannello ricevendo la notifica dal Model (pattern Observer).
+     * Complessità computazionale: O(1).
+     *
+     * @param modello il modello da cui provengono gli aggiornamenti (GiocoBriscola).
+     * @param arg argomenti opzionali.
+     */
     @Override
     public void update(Observable modello, Object arg) {
         GiocoBriscola gioco = (GiocoBriscola) modello;

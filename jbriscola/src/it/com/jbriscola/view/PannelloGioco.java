@@ -49,6 +49,8 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Costruttore con grafica di default.
+     * Complessità computazionale: O(1).
+     *
      * @param giocatori Array di giocatori partecipanti alla partita.
      */
     public PannelloGioco(Giocatore... giocatori) {
@@ -56,7 +58,10 @@ public class PannelloGioco extends Pannello {
     }
 
     /**
-     * Costruttore completo.
+     * Costruttore completo. Inizializza l'interfaccia grafica per il tavolo da gioco,
+     * compresa l'aggiunta di listener per il ridimensionamento della finestra.
+     * Complessità computazionale: O(1).
+     *
      * @param grafica Configurazione grafica del pannello.
      * @param giocatori Array di giocatori partecipanti alla partita.
      */
@@ -215,6 +220,10 @@ public class PannelloGioco extends Pannello {
         return vistaDestra;
     }
 
+    /**
+     * Aggiorna e ridisegna graficamente le carte attualmente in mano all'utente.
+     * Complessità computazionale: O(C) dove C è il numero di carte in mano (max 3).
+     */
     public void disegnaCarteGiocatore() {
         if (vistaGiocatore == null || giocatoreUmano == null) return;
         vistaGiocatore.removeAll();
@@ -249,6 +258,10 @@ public class PannelloGioco extends Pannello {
         }
     }
 
+    /**
+     * Disegna i dorsi delle carte in mano al bot alleato.
+     * Complessità computazionale: O(C) dove C è il numero di carte.
+     */
     public void disegnaCarteAlleato() {
         if (vistaAlleato == null || botAlleato == null) return;
         vistaAlleato.removeAll();
@@ -293,6 +306,10 @@ public class PannelloGioco extends Pannello {
         }
     }
 
+    /**
+     * Aggiorna e ridisegna le carte giocate sul tavolo da parte di tutti i giocatori.
+     * Complessità computazionale: O(C) dove C è il numero di carte a terra (max 4).
+     */
     public void disegnaCarteTavolo() {
         if (vistaTavolo == null || carteTavolo == null) return;
         vistaTavolo.removeAll();
@@ -357,30 +374,74 @@ public class PannelloGioco extends Pannello {
         return ruotata;
     }
 
+    /**
+     * Restituisce il bottone per tornare al menù.
+     * Complessità computazionale: O(1).
+     *
+     * @return il bottone menù.
+     */
     public JButton getBottoneMenu() {
         return bottoneMenu;
     }
 
+    /**
+     * Restituisce il bottone per confermare la carta giocata.
+     * Complessità computazionale: O(1).
+     *
+     * @return il bottone conferma.
+     */
     public JButton getBottoneConferma() {
         return bottoneConferma;
     }
 
+    /**
+     * Restituisce la carta attualmente selezionata dall'utente in interfaccia.
+     * Complessità computazionale: O(1).
+     *
+     * @return la carta selezionata.
+     */
     public Carta getCartaSelezionata() {
         return cartaSelezionata;
     }
 
+    /**
+     * Imposta o resetta la carta selezionata.
+     * Complessità computazionale: O(1).
+     *
+     * @param cartaSelezionata la carta da impostare come selezionata.
+     */
     public void setCartaSelezionata(Carta cartaSelezionata) {
         this.cartaSelezionata = cartaSelezionata;
     }
 
+    /**
+     * Restituisce il giocatore umano associato a questa vista.
+     * Complessità computazionale: O(1).
+     *
+     * @return il giocatore umano.
+     */
     public Giocatore getGiocatoreUmano() {
         return giocatoreUmano;
     }
 
+    /**
+     * Restituisce il numero del turno attuale salvato nel pannello (0 se turno utente).
+     * Complessità computazionale: O(1).
+     *
+     * @return il numero del turno.
+     */
     public int getNumeroTurno() {
         return numeroTurno;
     }
 
+    /**
+     * Riceve gli aggiornamenti di stato dal Model (pattern Observer).
+     * Aggiorna lo stato interno del pannello e ridisegna gli elementi visivi necessari.
+     * Complessità computazionale: O(1) per i metodi di aggiornamento Swing.
+     *
+     * @param partita l'oggetto Observable (PartitaBriscola) che ha notificato un cambiamento.
+     * @param arg argomenti extra (non usati).
+     */
     @Override
     public void update(Observable partita, Object arg) {
         PartitaBriscola partitaBriscola = (PartitaBriscola) partita;

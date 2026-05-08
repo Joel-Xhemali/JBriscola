@@ -19,14 +19,17 @@ public enum Valore {
 
     /**
      * Costruttore privato per il salvataggio dei punti
-     * @param punti
+     * @param punti il punteggio assegnato alla carta
      */
     private Valore(double punti) {
         this.punti = punti;
     }
 
     /**
-     * Metodo che restituisce i punti di una singolo valore
+     * Restituisce i punti associati al valore della carta.
+     * Complessità computazionale: O(1).
+     *
+     * @return i punti attribuiti al valore specifico.
      */
     public double getPunti() {
         return punti;

@@ -17,6 +17,11 @@ public class FinestraGioco extends JFrame {
     private final PannelloGiocatore pannelloGiocatore;
     private Optional<PannelloGioco> pannelloGioco;
 
+    /**
+     * Costruttore della classe FinestraGioco. Inizializza i componenti grafici di base
+     * e utilizza un CardLayout per gestire la navigazione tra le schermate.
+     * Complessità computazionale: O(1) in quanto viene creato un numero predefinito di pannelli.
+     */
     public FinestraGioco() {
         super(TITOLO);
 
@@ -39,22 +44,52 @@ public class FinestraGioco extends JFrame {
         setVisible(true); // Mostra la finestra a schermo
     }
 
+    /**
+     * Restituisce il pannello generale che contiene tutte le schermate del gioco.
+     * Complessità computazionale: O(1).
+     *
+     * @return il JPanel generale (CardLayout).
+     */
     public JPanel getPannelloGenerale() {
         return pannelloGenerale;
     }
 
+    /**
+     * Restituisce il pannello del menù principale.
+     * Complessità computazionale: O(1).
+     *
+     * @return il pannello menu.
+     */
     public PannelloMenu getPannelloMenu() {
         return pannelloMenu;
     }
 
+    /**
+     * Restituisce il pannello delle statistiche.
+     * Complessità computazionale: O(1).
+     *
+     * @return il pannello statistiche.
+     */
     public PannelloStatistiche getPannelloStatistiche() {
         return pannelloStatistiche;
     }
 
+    /**
+     * Restituisce il pannello per l'inserimento e la gestione del giocatore umano.
+     * Complessità computazionale: O(1).
+     *
+     * @return il pannello giocatore.
+     */
     public PannelloGiocatore getPannelloGiocatore() {
         return pannelloGiocatore;
     }
 
+    /**
+     * Restituisce un Optional contenente il pannello di gioco corrente, se presente.
+     * Complessità computazionale: O(1).
+     *
+     * @return un Optional con il PannelloGioco.
+     */
     public Optional<PannelloGioco> getPannelloGioco() {
         return pannelloGioco;
     }
@@ -62,7 +97,8 @@ public class FinestraGioco extends JFrame {
     /**
      * Metodo per inizializzare un nuovo pannello gioco (un eventuale pannello
      * pre-esistente viene sovrascritto) e aggiungerlo al pannello generale della
-     * finestra
+     * finestra.
+     * Complessità computazionale: O(1) in quanto rimuove e aggiunge un solo componente al CardLayout.
      *
      * @param giocatori che hanno iniziato la partita
      */
@@ -74,7 +110,8 @@ public class FinestraGioco extends JFrame {
 
     /**
      * Metodo per visualizzare un determinato pannello contenuto nel pannello
-     * generale (menù, statistiche o gioco)
+     * generale (menù, statistiche o gioco).
+     * Complessità computazionale: O(1).
      *
      * @param tipoPannello Tipo del pannello dal visualizzare
      */

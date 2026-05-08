@@ -33,24 +33,59 @@ public abstract class Pannello extends JPanel implements Observer {
             Map.of(TipoTesto.TITOLO, new Font("Stencil", Font.PLAIN, 65), TipoTesto.BOTTONE, GraficaPannello.CORSIVO,
                     TipoTesto.NORMALE, new Font("Calibri Light", Font.PLAIN, 40)));
 
+    /**
+     * Costruttore della classe astratta Pannello.
+     * Applica un LayoutManager personalizzato.
+     * Complessità computazionale: O(1).
+     *
+     * @param layout il LayoutManager da applicare al pannello.
+     */
     public Pannello(LayoutManager layout) {
         super(layout);
     }
 
+    /**
+     * Costruttore della classe astratta Pannello.
+     * Imposta le preferenze grafiche da usare.
+     * Complessità computazionale: O(1).
+     *
+     * @param grafica le opzioni grafiche per i colori e i font.
+     */
     public Pannello(GraficaPannello grafica) {
         this.grafica = grafica;
     }
 
+    /**
+     * Costruttore completo della classe astratta Pannello.
+     * Imposta il LayoutManager e le preferenze grafiche.
+     * Complessità computazionale: O(1).
+     *
+     * @param layout il LayoutManager da applicare al pannello.
+     * @param grafica le opzioni grafiche per i colori e i font.
+     */
     public Pannello(LayoutManager layout, GraficaPannello grafica) {
         super(layout);
         this.grafica = grafica;
     }
 
+    /**
+     * Restituisce le opzioni grafiche impostate per questo pannello.
+     * Complessità computazionale: O(1).
+     *
+     * @return l'oggetto GraficaPannello associato.
+     */
     public GraficaPannello getGrafica() {
         return grafica;
     }
 
-    // metodo che disegna uno sfondo a righe oblique per il pannello
+    /**
+     * Sovrascrive il metodo di disegno del pannello per creare uno sfondo a righe oblique.
+     * Viene chiamato dal framework Swing automaticamente.
+     * Complessità computazionale: O(W + H) dove W e H sono la larghezza e l'altezza in pixel del pannello,
+     * determinando il numero di linee disegnate (in base alla density fissa).
+     *
+     * @param g il contesto grafico usato per disegnare il componente.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
