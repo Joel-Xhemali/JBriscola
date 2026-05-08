@@ -1,5 +1,7 @@
 package it.com.jbriscola.model;
 
+import java.util.Objects;
+
 /**
  * Classe Carta che rappresenta la singola carta da gioco.
  */
@@ -72,8 +74,18 @@ public class Carta {
      *
      * @return i punti della carta
      */
-    public double getPuntiCarta() {
+    public int getPuntiCarta() {
         return valore.getPunti();
+    }
+
+    /**
+     * Restituisce il valore di forza della carta, utilizzato per determinare la gerarchia di presa.
+     * Complessità computazionale: O(1).
+     *
+     * @return la forza della carta (valore intero)
+     */
+    public int getForzaCarta() {
+        return valore.getForza();
     }
 
     /**
@@ -99,5 +111,32 @@ public class Carta {
                 ", valore=" + valore +
                 ", path=" + pathCarta +
                 '}';
+    }
+
+    /**
+     * Confronta questa carta con l'oggetto specificato per verificarne l'uguaglianza.
+     * Due carte sono considerate uguali se hanno lo stesso seme e lo stesso valore.
+     * Complessità computazionale: O(1).
+     *
+     * @param o l'oggetto da confrontare con questa carta
+     * @return true se l'oggetto è una Carta identica per seme e valore, false altrimenti
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Carta carta = (Carta) o;
+        return seme == carta.seme && valore == carta.valore;
+    }
+
+    /**
+     * Restituisce il valore hash per la carta.
+     * L'hash viene generato basandosi sui campi seme e valore per garantire coerenza con equals().
+     * Complessità computazionale: O(1).
+     *
+     * @return il valore hash calcolato per questa carta
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(seme, valore);
     }
 }

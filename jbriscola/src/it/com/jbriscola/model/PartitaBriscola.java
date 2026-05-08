@@ -33,7 +33,7 @@ public class PartitaBriscola extends Observable {
      * Inizializza una nuova partita, distribuendo le carte e impostando lo stato iniziale.
      * Complessità computazionale: O(1) per l'inizializzazione e la distribuzione delle carte (numero fisso di operazioni).
      *
-     * @param gioco Il riferimento al modello principale del gioco.
+     * @param gioco     Il riferimento al modello principale del gioco.
      * @param giocatore L'umano che partecipa alla partita.
      */
     public PartitaBriscola(GiocoBriscola gioco, Umano giocatore) {
@@ -45,15 +45,17 @@ public class PartitaBriscola extends Observable {
 
         // Giocatori
         this.giocatore = giocatore;
-        giocatore.setMano(mazzo.pescaCarte());
-        this.botAlleato = new Bot(Utils.estraiNome(), mazzo.pescaCarte());
-        this.botNemico1 = new Bot(Utils.estraiNome(), mazzo.pescaCarte());
-        this.botNemico2 = new Bot(Utils.estraiNome(), mazzo.pescaCarte());
+        this.botAlleato = new Bot(Utils.estraiNome());
+        this.botNemico1 = new Bot(Utils.estraiNome());
+        this.botNemico2 = new Bot(Utils.estraiNome());
 
         // Setting Partita
         stato = StatoPartita.IN_CORSO;
         numeroTurno = new Random().nextInt(4);
         carteSulTavolo = new ArrayList<>(4);
+        distribuisciCarte();
+
+        System.out.println(numeroTurno);
     }
 
     /**
@@ -140,6 +142,16 @@ public class PartitaBriscola extends Observable {
     }
 
     /**
+     * Restituisce il mazzo di carte utilizzato nella partita corrente.
+     * Complessità computazionale: O(1).
+     *
+     * @return il mazzo della partita.
+     */
+    public Mazzo getMazzo() {
+        return mazzo;
+    }
+
+    /**
      * Restituisce la somma dei punti del giocatore e dei nemici.
      * Complessità computazionale: O(1).
      *
@@ -169,26 +181,43 @@ public class PartitaBriscola extends Observable {
         return numeroTurno;
     }
 
+    private void distribuisciCarte() {
+        int nGiocatore = numeroTurno;
+        for (int i = 0; i < 4; i++) {
+            Giocatore g = getGiocatoreDalTurno(nGiocatore);
+            if (g.getMano() == null) g.setMano(mazzo.pescaCarte());
+            else {
+                if (!mazzo.isEmpty()) g.pesca(mazzo.pesca());
+                else g.pesca(briscola);
+            }
+            nGiocatore = (nGiocatore + 1) % 4;
+        }
+    }
+
     /**
      * Un giocatore scarta una carta. La carta viene aggiunta al tavolo, il turno avanza,
      * e se ci sono 4 carte sul tavolo, la presa viene risolta.
      * Complessità computazionale: O(1) per le operazioni di lista e aggiornamento stato.
      *
      * @param giocatore il giocatore che scarta la carta.
-     * @param carta la carta che viene scartata.
+     * @param carta     la carta che viene scartata.
      */
     public void scarta(Giocatore giocatore, Carta carta) {
         giocatore.getMano().remove(carta);
         carteSulTavolo.add(carta);
+        giocatore.setCartaScartata(carta);
 
-        if (cartaComanda == null || carta.getPuntiCarta() > cartaComanda.getPuntiCarta()) cartaComanda = carta;
-
-
-        // Se la carta scartata è di briscola allora si aggiunge 1 al punteggio del giocatore
-        // Esempio valore 4 ha punti 0.002 passa a 1.002 che è maggiore di qualsiasi altro valore non briscola
-        // Puo essere superato però da una briscola più alta tipo valore 7 ha punti 0.005 passa a 1.005
-        double puntiCarta = carta.getSeme() == briscola.getSeme() ? carta.getPuntiCarta() + 1 : carta.getPuntiCarta();
-        giocatore.setPuntiTavolo(puntiCarta);
+        if (cartaComanda == null) {
+            cartaComanda = carta;
+        } else if (cartaComanda.getSeme() == briscola.getSeme()) {
+            if (carta.getSeme() == briscola.getSeme() && carta.getForzaCarta() > cartaComanda.getForzaCarta()){
+                cartaComanda = carta;
+            }
+        } else {
+            if (carta.getSeme() == briscola.getSeme() || (carta.getSeme() ==cartaComanda.getSeme() && carta.getForzaCarta() > cartaComanda.getForzaCarta())){
+                cartaComanda = carta;
+            }
+        }
 
         // 1. Avanza il turno in modo circolare tra i 4 giocatori (0, 1, 2, 3, poi torna a 0)
         numeroTurno = (numeroTurno + 1) % 4;
@@ -198,7 +227,10 @@ public class PartitaBriscola extends Observable {
 
         // 2. Controlla se la presa è conclusa (4 carte sul tavolo)
         if (carteSulTavolo.size() == 4) {
-            risolviPresa();
+            // Utilizziamo un javax.swing.Timer al posto di Thread.sleep per evitare di bloccare l'interfaccia grafica
+            javax.swing.Timer t = new javax.swing.Timer(2000, e -> risolviPresa());
+            t.setRepeats(false);
+            t.start();
         } else {
             // 3. Se la presa non è finita e il turno corrente NON è dell'umano (0), fai giocare i bot
             if (numeroTurno != 0 && stato == StatoPartita.IN_CORSO) {
@@ -213,19 +245,22 @@ public class PartitaBriscola extends Observable {
      * Complessità computazionale: O(1) in quanto il numero massimo di bot è fisso (3).
      */
     public void eseguiTurniBot() {
-        // Utilizziamo un ciclo: in giochi a turni, se ci sono più bot consecutivi,
-        // questo ciclo li farà giocare in automatico in frazioni di secondo.
-        while (numeroTurno != 0 && carteSulTavolo.size() < 4) {
-            Giocatore botDiTurno = getGiocatoreDalTurno(numeroTurno);
+        // Utilizziamo un Timer di Swing per non bloccare l'interfaccia grafica.
+        // In questo modo, diamo tempo all'utente di vedere le mosse e la View può aggiornarsi.
+        javax.swing.Timer timer = new javax.swing.Timer(2000, e -> {
+            if (numeroTurno != 0 && carteSulTavolo.size() < 4) {
+                Giocatore botDiTurno = getGiocatoreDalTurno(numeroTurno);
 
-            // Intelligenza Artificiale base: gioca la prima carta disponibile nella mano
-            if (!botDiTurno.getMano().isEmpty()) {
-
-                Carta cartaScelta = botDiTurno.getMano().getFirst();
-                // Il bot scarta la sua carta. Questo invocherà nuovamente scarta() in modo ricorsivo/sequenziale
-                scarta(botDiTurno, cartaScelta);
+                // Intelligenza Artificiale base: gioca la prima carta disponibile nella mano
+                if (!botDiTurno.getMano().isEmpty()) {
+                    Carta cartaScelta = botDiTurno.getMano().getFirst();
+                    // Il bot scarta la sua carta. Questo invocherà nuovamente scarta()
+                    scarta(botDiTurno, cartaScelta);
+                }
             }
-        }
+        });
+        timer.setRepeats(false);
+        timer.start();
     }
 
     /**
@@ -253,29 +288,39 @@ public class PartitaBriscola extends Observable {
      * Complessità computazionale: O(1) in quanto opera su un numero fisso di carte (4).
      */
     private void risolviPresa() {
-        double maxPunti = 0;
+        int forzaMax = 0;
         int giocatoreWin = 0;
+        int sommaPunti = 0;
         for (int i = 0; i < 4; i++) {
-            double giocatorePunti = getGiocatoreDalTurno(i).getPuntiTavolo();
-            if (maxPunti < giocatorePunti) {
-                maxPunti = giocatorePunti;
+            Carta cartaScartata = getGiocatoreDalTurno(i).getCartaScartata();
+            sommaPunti += cartaScartata.getPuntiCarta();
+            if (cartaComanda.equals(cartaScartata)) {
                 giocatoreWin = i;
+                break;
             }
         }
 
+        if (giocatoreWin == 0 || giocatoreWin == 2) this.puntiGiocatore += sommaPunti;
+        else this.puntiNemici += sommaPunti;
+
         carteSulTavolo.clear();
+        cartaComanda = null;
         numeroTurno = giocatoreWin;
 
         if (mazzo.isEmpty()) {
-            if (puntiNemici > puntiGiocatore) stato = StatoPartita.PERSA;
-            else stato = StatoPartita.VINTA;
-        }
+            if (getGiocatoreDalTurno(numeroTurno).getMano().isEmpty()) {
+                if (puntiNemici > puntiGiocatore) stato = StatoPartita.PERSA;
+                else stato = StatoPartita.VINTA;
+                gioco.terminaPartita();
+            }
+        } else distribuisciCarte();
+
 
         setChanged();
         notifyObservers();
 
         // Se il giocatore che ha vinto la presa (che deve iniziare la mano successiva) 
-        // è un bot, inneschiamo immediatamente le বহুম turni
+        // è un bot, inneschiamo immediatamente i suoi turni
         if (numeroTurno != 0 && stato == StatoPartita.IN_CORSO) {
             eseguiTurniBot();
         }

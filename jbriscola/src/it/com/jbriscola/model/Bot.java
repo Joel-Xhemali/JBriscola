@@ -27,9 +27,8 @@ public class Bot extends Giocatore {
      * Complessità computazionale: O(1) in quanto chiama l'altro costruttore della classe.
      *
      * @param nome il nome del bot
-     * @param mano la lista di carte inizialmente in mano al bot
      */
-    public Bot(String nome, List<Carta> mano) {
-        this(nome, Utils.getPathAvatar(), mano);
+    public Bot(String nome) {
+        this(nome, Utils.getPathAvatar(), null);
     }
 }

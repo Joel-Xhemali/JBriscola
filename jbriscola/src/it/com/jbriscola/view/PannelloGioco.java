@@ -9,72 +9,126 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 
 /**
  * Pannello principale di gioco che gestisce la visualizzazione del tavolo,
- * della mano del giocatore e dei bot.
+ * della mano dei giocatori e dell'interfaccia utente.
+ * Architettura visiva ottimizzata tramite caching e gerarchie di Layout rigorose.
  */
 public class PannelloGioco extends Pannello {
 
-    private JLabel punti;
-    private JButton bottoneMenu;
-    private JButton bottoneConferma;
+    private final JButton bottoneMenu;
+    private final JButton bottoneConferma;
     private int numeroTurno;
 
-    private final JLabel labelAvatar = new JLabel();
-    private final JLabel labelNome = new JLabel();
+    private final JLabel labelPunti = new JLabel();
 
     private JPanel vistaTavolo;
     private List<Carta> carteTavolo = new ArrayList<>();
+    private Carta briscola = null;
+    private Mazzo mazzo = null;
 
     private JPanel vistaGiocatore;
     private Carta cartaSelezionata = null;
+
     private Giocatore giocatoreUmano;
+    private PannelloProfilo profiloUmano;
 
     private JPanel vistaAlleato;
     private Giocatore botAlleato;
+    private PannelloProfilo profiloAlleato;
 
     private JPanel vistaSinistra;
     private Giocatore botNemico1;
+    private PannelloProfilo profiloSinistra;
 
     private JPanel vistaDestra;
     private Giocatore botNemico2;
+    private PannelloProfilo profiloDestra;
 
     private static final String PATH_RETRO_CARTE = "assets/carte/retro_carta.png";
+    private static final String INDICAZIONE_MENU = "Menù";
+    private static final String INDICAZIONE_CONFERMA = "Conferma";
 
-    private static String indicazioneMenu = "Menù";
-    private static String indicazioneConferma = "Conferma";
+    private final Map<String, BufferedImage> cacheScalate = new HashMap<>();
 
     /**
-     * Costruttore con grafica di default.
+     * Componente UI unificato per il profilo di un Giocatore.
+     * Mostra l'avatar e il nome del giocatore.
+     */
+    private class PannelloProfilo extends JPanel {
+        private final JLabel avatarLabel = new JLabel();
+        private final JLabel nomeLabel = new JLabel();
+        private final Giocatore giocatore;
+
+        /**
+         * Crea un nuovo PannelloProfilo.
+         * Complessità computazionale: O(1).
+         *
+         * @param giocatore Il giocatore da rappresentare.
+         */
+        public PannelloProfilo(Giocatore giocatore) {
+            super(new FlowLayout(FlowLayout.CENTER, 10, 5));
+            setOpaque(false);
+            this.giocatore = giocatore;
+
+            nomeLabel.setText(giocatore != null ? giocatore.getNome() : "");
+            nomeLabel.setForeground(Color.DARK_GRAY);
+
+            add(avatarLabel);
+            add(nomeLabel);
+        }
+
+        /**
+         * Aggiorna la grafica del pannello in base alle nuove dimensioni fornite.
+         * Complessità computazionale: O(1) (ammortizzato grazie alla cache).
+         *
+         * @param targetSize Dimensione desiderata per l'avatar.
+         * @param fontSize Dimensione desiderata per il font.
+         */
+        public void aggiornaGrafica(int targetSize, int fontSize) {
+            if (giocatore == null) return;
+            try {
+                BufferedImage imgOriginale = CacheImmagini.getImmagine(giocatore.getAvatar());
+                BufferedImage imgScalata = ottieniImmagineScalata(giocatore.getAvatar(), imgOriginale, targetSize, targetSize);
+                avatarLabel.setIcon(new ImageIcon(imgScalata));
+            } catch (Exception e) {
+                avatarLabel.setText("[IMG]");
+            }
+            nomeLabel.setFont(new Font("Arial", Font.BOLD, fontSize));
+        }
+    }
+
+    /**
+     * Costruttore di default della classe PannelloGioco.
      * Complessità computazionale: O(1).
      *
-     * @param giocatori Array di giocatori partecipanti alla partita.
+     * @param giocatori Lista di giocatori che partecipano alla partita.
      */
     public PannelloGioco(Giocatore... giocatori) {
         this(GRAFICA_DEFAULT, giocatori);
     }
 
     /**
-     * Costruttore completo. Inizializza l'interfaccia grafica per il tavolo da gioco,
-     * compresa l'aggiunta di listener per il ridimensionamento della finestra.
+     * Costruttore completo della classe PannelloGioco.
      * Complessità computazionale: O(1).
      *
-     * @param grafica Configurazione grafica del pannello.
-     * @param giocatori Array di giocatori partecipanti alla partita.
+     * @param grafica Impostazioni grafiche per il pannello.
+     * @param giocatori Lista di giocatori che partecipano alla partita.
      */
     public PannelloGioco(GraficaPannello grafica, Giocatore... giocatori) {
         super(new BorderLayout(20, 20), grafica);
-        bottoneMenu = grafica.creaBottone(indicazioneMenu);
-        bottoneConferma = grafica.creaBottone(indicazioneConferma);
+        bottoneMenu = grafica.creaBottone(INDICAZIONE_MENU);
+        bottoneConferma = grafica.creaBottone(INDICAZIONE_CONFERMA);
 
-        // Disabilitato di default in attesa che il Model comunichi che è il turno 0
         bottoneConferma.setEnabled(false);
 
         inizializzaPannello(giocatori);
-        
+
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -83,6 +137,12 @@ public class PannelloGioco extends Pannello {
         });
     }
 
+    /**
+     * Inizializza il layout principale dividendo il pannello in 5 aree.
+     * Complessità computazionale: O(1).
+     *
+     * @param giocatori I giocatori coinvolti nella partita.
+     */
     private void inizializzaPannello(Giocatore... giocatori) {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -98,89 +158,47 @@ public class PannelloGioco extends Pannello {
         add(creaPannelloDestro(), BorderLayout.EAST);
     }
 
+    /**
+     * Crea il pannello inferiore contenente le carte del giocatore e i comandi base.
+     * Complessità computazionale: O(1).
+     *
+     * @return Il pannello configurato.
+     */
     private JPanel creaPannelloInferiore() {
-        JPanel p = new JPanel(new BorderLayout(20, 10));
+        JPanel p = new JPanel(new BorderLayout(0, 10));
         p.setOpaque(false);
 
-        p.add(creaPannelloProfilo(), BorderLayout.WEST);
+        // Blocco logico orizzontale: Profilo -> Carte -> Bottone Conferma
+        JPanel centroInferiore = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 0));
+        centroInferiore.setOpaque(false);
 
-        vistaGiocatore = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
+        profiloUmano = new PannelloProfilo(giocatoreUmano);
+        centroInferiore.add(profiloUmano);
+
+        vistaGiocatore = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         vistaGiocatore.setOpaque(false);
         disegnaCarteGiocatore();
-        p.add(vistaGiocatore, BorderLayout.CENTER);
+        centroInferiore.add(vistaGiocatore);
 
-        JPanel pannelloBottoni = new JPanel(new BorderLayout());
-        pannelloBottoni.setOpaque(false);
+        centroInferiore.add(bottoneConferma);
 
-        JPanel conferma = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        conferma.setOpaque(false);
-        conferma.add(bottoneConferma);
+        p.add(centroInferiore, BorderLayout.CENTER);
 
-        JPanel menu = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        menu.setOpaque(false);
-        menu.add(bottoneMenu);
-
-        pannelloBottoni.add(conferma, BorderLayout.CENTER);
-        pannelloBottoni.add(menu, BorderLayout.EAST);
-        p.add(pannelloBottoni, BorderLayout.SOUTH);
+        // Bottone Menù relegato in basso a destra
+        JPanel menuPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        menuPanel.setOpaque(false);
+        menuPanel.add(bottoneMenu);
+        p.add(menuPanel, BorderLayout.SOUTH);
 
         return p;
     }
 
-    private JPanel creaPannelloProfilo() {
-        JPanel profilo = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
-        profilo.setOpaque(false);
-
-        labelNome.setForeground(Color.DARK_GRAY);
-        labelNome.setText(giocatoreUmano.getNome());
-
-        profilo.add(labelAvatar);
-        profilo.add(labelNome);
-
-        aggiornaProfilo();
-        return profilo;
-    }
-
-    private double calcolaFattoreScala() {
-        var w = getWidth();
-        var h = getHeight();
-        if (w == 0 || h == 0) return 1.0;
-        return Math.min((double) w / 1000.0, (double) h / 700.0);
-    }
-
-    private void aggiornaInterfaccia() {
-        aggiornaProfilo();
-        disegnaCarteGiocatore();
-        disegnaCarteAlleato();
-        disegnaCarteNemico1();
-        disegnaCarteNemico2();
-        disegnaCarteTavolo();
-
-        var scala = calcolaFattoreScala();
-        var fontSize = (int) Math.max(12, 16 * scala);
-        var font = new Font("Arial", Font.BOLD, fontSize);
-        bottoneMenu.setFont(font);
-        bottoneConferma.setFont(font);
-
-        this.revalidate();
-        this.repaint();
-    }
-
-    private void aggiornaProfilo() {
-        if (giocatoreUmano == null) return;
-        var scala = calcolaFattoreScala();
-        var size = (int) Math.max(30, 60 * scala);
-        try {
-            var imgOriginale = CacheImmagini.getImmagine(giocatoreUmano.getAvatar());
-            var imgScalata = scalaImmagine(imgOriginale, size, size);
-            labelAvatar.setIcon(new ImageIcon(imgScalata));
-        } catch (Exception e) {
-            labelAvatar.setText("[IMG]");
-        }
-        var fontSize = (int) Math.max(12, 18 * scala);
-        labelNome.setFont(new Font("Arial", Font.BOLD, fontSize));
-    }
-
+    /**
+     * Crea il pannello centrale, destinato alla rappresentazione del tavolo.
+     * Complessità computazionale: O(1).
+     *
+     * @return Il pannello del tavolo.
+     */
     private JPanel creaPannelloCentrale() {
         JPanel p = new JPanel(new BorderLayout());
         p.setOpaque(false);
@@ -194,30 +212,133 @@ public class PannelloGioco extends Pannello {
         return p;
     }
 
+    /**
+     * Crea il pannello superiore contenente le carte del bot alleato e il punteggio.
+     * Complessità computazionale: O(1).
+     *
+     * @return Il pannello configurato.
+     */
     private JPanel creaPannelloSuperiore() {
         JPanel p = new JPanel(new BorderLayout());
         p.setOpaque(false);
 
-        vistaAlleato = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
+        JPanel pannelloPunti = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+        pannelloPunti.setOpaque(false);
+        labelPunti.setText("Punti: 0");
+        labelPunti.setForeground(Color.BLACK);
+        var scala = calcolaFattoreScala();
+        labelPunti.setFont(new Font("Arial", Font.BOLD, (int) Math.max(14, 20 * scala)));
+        pannelloPunti.add(labelPunti);
+        p.add(pannelloPunti, BorderLayout.WEST);
+
+        // Blocco logico orizzontale: Profilo -> Carte
+        JPanel centroTop = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
+        centroTop.setOpaque(false);
+
+        profiloAlleato = new PannelloProfilo(botAlleato);
+        centroTop.add(profiloAlleato);
+
+        vistaAlleato = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         vistaAlleato.setOpaque(false);
         disegnaCarteAlleato();
+        centroTop.add(vistaAlleato);
 
-        p.add(vistaAlleato, BorderLayout.CENTER);
+        p.add(centroTop, BorderLayout.CENTER);
+
+        JPanel placeholder = new JPanel();
+        placeholder.setOpaque(false);
+        placeholder.setPreferredSize(new Dimension(100, 10));
+        p.add(placeholder, BorderLayout.EAST);
+
         return p;
     }
 
+    /**
+     * Crea il pannello di sinistra destinato alle carte e al profilo del nemico 1.
+     * Complessità computazionale: O(1).
+     *
+     * @return Il pannello configurato.
+     */
     private JPanel creaPannelloSinistro() {
-        vistaSinistra = new JPanel(new GridLayout(3, 1, 10, 10));
+        JPanel p = new JPanel(new BorderLayout());
+        p.setOpaque(false);
+
+        profiloSinistra = new PannelloProfilo(botNemico1);
+        p.add(profiloSinistra, BorderLayout.NORTH);
+
+        vistaSinistra = new JPanel(null);
         vistaSinistra.setOpaque(false);
+
         disegnaCarteNemico1();
-        return vistaSinistra;
+        p.add(vistaSinistra, BorderLayout.CENTER);
+
+        return p;
     }
 
+    /**
+     * Crea il pannello di destra destinato alle carte e al profilo del nemico 2.
+     * Complessità computazionale: O(1).
+     *
+     * @return Il pannello configurato.
+     */
     private JPanel creaPannelloDestro() {
-        vistaDestra = new JPanel(new GridLayout(3, 1, 10, 10));
+        JPanel p = new JPanel(new BorderLayout());
+        p.setOpaque(false);
+
+        profiloDestra = new PannelloProfilo(botNemico2);
+        p.add(profiloDestra, BorderLayout.NORTH);
+
+        vistaDestra = new JPanel(null);
         vistaDestra.setOpaque(false);
+
         disegnaCarteNemico2();
-        return vistaDestra;
+        p.add(vistaDestra, BorderLayout.CENTER);
+
+        return p;
+    }
+
+    /**
+     * Calcola un fattore scalare per ridimensionare la grafica in modo dinamico.
+     * Complessità computazionale: O(1).
+     *
+     * @return un numero `double` da utilizzare come modificatore.
+     */
+    private double calcolaFattoreScala() {
+        var w = getWidth();
+        var h = getHeight();
+        if (w == 0 || h == 0) return 1.0;
+        return Math.min((double) w / 1000.0, (double) h / 700.0);
+    }
+
+    /**
+     * Aggiorna l'interfaccia interamente, richiamando tutti i metodi di draw dei componenti.
+     * Complessità computazionale: O(N) dove N è il numero di carte da disegnare nei rispettivi panel.
+     */
+    private void aggiornaInterfaccia() {
+        var scala = calcolaFattoreScala();
+
+        var sizeProfilo = (int) Math.max(25, 45 * scala);
+        var fontProfilo = (int) Math.max(12, 16 * scala);
+
+        if (profiloUmano != null) profiloUmano.aggiornaGrafica(sizeProfilo, fontProfilo);
+        if (profiloAlleato != null) profiloAlleato.aggiornaGrafica(sizeProfilo, fontProfilo);
+        if (profiloSinistra != null) profiloSinistra.aggiornaGrafica(sizeProfilo, fontProfilo);
+        if (profiloDestra != null) profiloDestra.aggiornaGrafica(sizeProfilo, fontProfilo);
+
+        disegnaCarteGiocatore();
+        disegnaCarteAlleato();
+        disegnaCarteNemico1();
+        disegnaCarteNemico2();
+        disegnaCarteTavolo();
+
+        var fontMenuConferma = new Font("Arial", Font.BOLD, (int) Math.max(12, 16 * scala));
+        bottoneMenu.setFont(fontMenuConferma);
+        bottoneConferma.setFont(fontMenuConferma);
+
+        labelPunti.setFont(new Font("Arial", Font.BOLD, (int) Math.max(14, 20 * scala)));
+
+        this.revalidate();
+        this.repaint();
     }
 
     /**
@@ -238,10 +359,10 @@ public class PannelloGioco extends Pannello {
         for (Carta carta : giocatoreUmano.getMano()) {
             JLabel labelImmagine = new JLabel();
             BufferedImage imgOriginale = CacheImmagini.getImmagine(carta.getPathCarta());
-            BufferedImage imgScalata = scalaImmagine(imgOriginale, cardW, cardH);
+            BufferedImage imgScalata = ottieniImmagineScalata(carta.getPathCarta(), imgOriginale, cardW, cardH);
 
             labelImmagine.setIcon(new ImageIcon(imgScalata));
-            labelImmagine.setBorder(bordoNormale);
+            labelImmagine.setBorder(carta.equals(cartaSelezionata) ? bordoSelezionato : bordoNormale);
             labelImmagine.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
             labelImmagine.addMouseListener(new MouseAdapter() {
@@ -270,89 +391,197 @@ public class PannelloGioco extends Pannello {
         var cardW = (int) Math.max(50, 90 * scala);
         var cardH = (int) Math.max(86, 140 * scala);
 
+        BufferedImage imgOriginale = CacheImmagini.getImmagine(PATH_RETRO_CARTE);
+        BufferedImage imgScalata = ottieniImmagineScalata(PATH_RETRO_CARTE, imgOriginale, cardW, cardH);
+
         for (int i = 0; i < botAlleato.getMano().size(); i++) {
-            JLabel labelImmagine = new JLabel();
-            BufferedImage imgOriginale = CacheImmagini.getImmagine(PATH_RETRO_CARTE);
-            BufferedImage imgScalata = scalaImmagine(imgOriginale, cardW, cardH);
-            labelImmagine.setIcon(new ImageIcon(imgScalata));
+            JLabel labelImmagine = new JLabel(new ImageIcon(imgScalata));
             vistaAlleato.add(labelImmagine);
         }
     }
 
+    /**
+     * Ridisegna la mano del primo bot nemico.
+     * Complessità computazionale: O(C).
+     */
     private void disegnaCarteNemico1() {
         if (vistaSinistra == null || botNemico1 == null) return;
         vistaSinistra.removeAll();
         disegnaCarteVerticali(vistaSinistra, botNemico1, 90);
     }
 
+    /**
+     * Ridisegna la mano del secondo bot nemico.
+     * Complessità computazionale: O(C).
+     */
     private void disegnaCarteNemico2() {
         if (vistaDestra == null || botNemico2 == null) return;
         vistaDestra.removeAll();
         disegnaCarteVerticali(vistaDestra, botNemico2, -90);
     }
 
+    /**
+     * Disegna i dorsi delle carte ruotati verticalmente all'interno di un pannello specifico.
+     * Crea un effetto a "ventaglio chiuso" sovrapponendo le carte.
+     * Complessità computazionale: O(C) dove C è il numero di carte.
+     *
+     * @param pannello Il pannello di destinazione.
+     * @param bot Il giocatore per cui disegnare le carte.
+     * @param angolo L'angolo di rotazione (tipicamente +/- 90).
+     */
     private void disegnaCarteVerticali(JPanel pannello, Giocatore bot, int angolo) {
         var scala = calcolaFattoreScala();
-        double aspectRatio = 140.0 / 90.0;
-        var cardW = (int) Math.max(40, 70 * scala);
-        var cardH = (int) (cardW * aspectRatio);
+        var cardW = (int) Math.max(40, 75 * scala);
+        var cardH = (int) Math.max(65, 115 * scala);
 
-        for (int i = 0; i < bot.getMano().size(); i++) {
-            JLabel labelImmagine = new JLabel();
-            BufferedImage imgOriginale = CacheImmagini.getImmagine(PATH_RETRO_CARTE);
-            BufferedImage imgRuotata = creaImmagineRuotata(imgOriginale, cardW, cardH, angolo);
-            labelImmagine.setIcon(new ImageIcon(imgRuotata));
+        BufferedImage imgOriginale = CacheImmagini.getImmagine(PATH_RETRO_CARTE);
+        BufferedImage imgRuotata = ottieniImmagineRuotata(PATH_RETRO_CARTE, imgOriginale, cardW, cardH, angolo);
+
+        int numCarte = bot.getMano().size();
+        if (numCarte == 0) return;
+
+        // In un'immagine ruotata a 90°, la larghezza percepita è cardH e l'altezza percepita è cardW.
+        int larghezzaReale = imgRuotata.getWidth();
+        int altezzaReale = imgRuotata.getHeight();
+
+        // Le carte si sovrappongono mostrando solo un terzo del loro dorso (effetto ventaglio chiuso)
+        int stepY = altezzaReale / 3;
+        int altezzaTotalePannello = (stepY * (numCarte - 1)) + altezzaReale;
+
+        // Comunichiamo al genitore (BorderLayout) quanto spazio geometrico ci serve esattamente
+        pannello.setPreferredSize(new Dimension(larghezzaReale, altezzaTotalePannello));
+
+        for (int i = 0; i < numCarte; i++) {
+            JLabel labelImmagine = new JLabel(new ImageIcon(imgRuotata));
+
+            // Posizionamento assoluto: scendiamo sull'asse Y per ogni carta
+            labelImmagine.setBounds(0, i * stepY, larghezzaReale, altezzaReale);
+
             pannello.add(labelImmagine);
         }
     }
 
     /**
-     * Aggiorna e ridisegna le carte giocate sul tavolo da parte di tutti i giocatori.
-     * Complessità computazionale: O(C) dove C è il numero di carte a terra (max 4).
+     * Aggiorna e ridisegna le carte giocate sul tavolo da parte di tutti i giocatori,
+     * inclusa la carta briscola in alto a sinistra ed il relativo mazzo.
+     * Complessità computazionale: O(C) dove C è il numero di carte a terra.
      */
     public void disegnaCarteTavolo() {
         if (vistaTavolo == null || carteTavolo == null) return;
         vistaTavolo.removeAll();
 
-        int centroTavoloX = vistaTavolo.getWidth() > 0 ? vistaTavolo.getWidth() / 2 : 400;
-        int centroTavoloY = vistaTavolo.getHeight() > 0 ? vistaTavolo.getHeight() / 2 : 200;
-
         var scala = calcolaFattoreScala();
         var cardW = (int) Math.max(50, 90 * scala);
         var cardH = (int) Math.max(86, 140 * scala);
 
+        int centroTavoloX = vistaTavolo.getWidth() > 0 ? vistaTavolo.getWidth() / 2 : 400;
+        int centroTavoloY = vistaTavolo.getHeight() > 0 ? vistaTavolo.getHeight() / 2 : 200;
+
+        int spreadX = (int)(45 * scala);
+        int spreadY = (int)(15 * scala);
+        int offsetGruppoX = carteTavolo.isEmpty() ? 0 : ((carteTavolo.size() - 1) * spreadX) / 2;
+
+        int offsetBriscolaX = cardW + (int)(60 * scala) + offsetGruppoX;
+        int briscolaX = centroTavoloX - offsetBriscolaX;
+        int briscolaY = centroTavoloY - (cardH / 2);
+
         int counter = 0;
-        for (var carta : carteTavolo.reversed()) {
+        for (var carta : carteTavolo) {
             JLabel labelImmagine = new JLabel();
             int angolo = counter * 45;
 
             BufferedImage imgOriginale = CacheImmagini.getImmagine(carta.getPathCarta());
-            BufferedImage imgFinale = creaImmagineRuotata(imgOriginale, cardW, cardH, angolo);
+            BufferedImage imgFinale = ottieniImmagineRuotata(carta.getPathCarta(), imgOriginale, cardW, cardH, angolo);
             labelImmagine.setIcon(new ImageIcon(imgFinale));
 
-            int finalWidth = imgFinale.getWidth();
-            int finalHeight = imgFinale.getHeight();
-            int xPerfetta = centroTavoloX - (finalWidth / 2) + (counter * 4);
-            int yPerfetta = centroTavoloY - (finalHeight / 2) - (counter * 2);
+            int xPerfetta = centroTavoloX - (imgFinale.getWidth() / 2) + (counter * spreadX) - offsetGruppoX;
+            int yPerfetta = centroTavoloY - (imgFinale.getHeight() / 2) + ((counter % 2 == 0 ? 1 : -1) * spreadY);
 
-            labelImmagine.setBounds(xPerfetta, yPerfetta, finalWidth, finalHeight);
-            vistaTavolo.add(labelImmagine);
+            labelImmagine.setBounds(xPerfetta, yPerfetta, imgFinale.getWidth(), imgFinale.getHeight());
+            vistaTavolo.add(labelImmagine, 0);
             counter++;
         }
+
+        if (mazzo != null && !mazzo.isEmpty()) {
+            JLabel labelMazzo = new JLabel();
+            BufferedImage imgOriginale = CacheImmagini.getImmagine(PATH_RETRO_CARTE);
+            BufferedImage imgRuotata = ottieniImmagineRuotata(PATH_RETRO_CARTE, imgOriginale, cardW, cardH, 90);
+            labelMazzo.setIcon(new ImageIcon(imgRuotata));
+
+            int offsetSeme = (int)(20 * scala);
+            int mazzoX = briscolaX + (cardW - cardH) / 2 - offsetSeme;
+            int mazzoY = briscolaY + (cardH - cardW) / 2;
+
+            labelMazzo.setBounds(mazzoX, mazzoY, imgRuotata.getWidth(), imgRuotata.getHeight());
+            vistaTavolo.add(labelMazzo, vistaTavolo.getComponentCount());
+        }
+
+        if (briscola != null) {
+            JLabel labelBriscola = new JLabel();
+            BufferedImage imgOriginale = CacheImmagini.getImmagine(briscola.getPathCarta());
+            BufferedImage imgScalata = ottieniImmagineScalata(briscola.getPathCarta(), imgOriginale, cardW, cardH);
+
+            labelBriscola.setIcon(new ImageIcon(imgScalata));
+            labelBriscola.setBounds(briscolaX, briscolaY, cardW, cardH);
+            vistaTavolo.add(labelBriscola, vistaTavolo.getComponentCount());
+        }
+
         vistaTavolo.revalidate();
         vistaTavolo.repaint();
     }
 
-    private BufferedImage scalaImmagine(Image imgOriginale, int targetWidth, int targetHeight) {
-        BufferedImage scalata = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = scalata.createGraphics();
-        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.drawImage(imgOriginale, 0, 0, targetWidth, targetHeight, null);
-        g2d.dispose();
-        return scalata;
+    /**
+     * Esegue il recupero con caching di un'immagine scalata per massimizzare le performance di rendering.
+     * Complessità computazionale: O(1) ammortizzato.
+     *
+     * @param id L'identificativo univoco dell'immagine.
+     * @param imgOriginale L'immagine di base.
+     * @param width Larghezza desiderata.
+     * @param height Altezza desiderata.
+     * @return L'immagine renderizzata.
+     */
+    private BufferedImage ottieniImmagineScalata(String id, BufferedImage imgOriginale, int width, int height) {
+        if (imgOriginale == null) return null;
+        String key = id + "_" + width + "x" + height;
+
+        return cacheScalate.computeIfAbsent(key, k -> {
+            BufferedImage scalata = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = scalata.createGraphics();
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.drawImage(imgOriginale, 0, 0, width, height, null);
+            g2d.dispose();
+            return scalata;
+        });
     }
 
+    /**
+     * Esegue il recupero con caching di un'immagine scalata e ruotata.
+     * Complessità computazionale: O(1) ammortizzato.
+     *
+     * @param id L'identificativo univoco dell'immagine.
+     * @param imgOriginale L'immagine di base.
+     * @param targetWidth Larghezza base desiderata.
+     * @param targetHeight Altezza base desiderata.
+     * @param angoloGradi Angolo in gradi in base a cui ruotare l'immagine.
+     * @return L'immagine scalata e ruotata.
+     */
+    private BufferedImage ottieniImmagineRuotata(String id, BufferedImage imgOriginale, int targetWidth, int targetHeight, int angoloGradi) {
+        if (imgOriginale == null) return null;
+        String key = id + "_rot_" + angoloGradi + "_" + targetWidth + "x" + targetHeight;
+
+        return cacheScalate.computeIfAbsent(key, k -> creaImmagineRuotata(imgOriginale, targetWidth, targetHeight, angoloGradi));
+    }
+
+    /**
+     * Motore di rendering core per la rotazione di un'immagine di base.
+     *
+     * @param imgOriginale Immagine non ruotata.
+     * @param targetWidth Larghezza base.
+     * @param targetHeight Altezza base.
+     * @param angoloGradi Gradi di rotazione.
+     * @return L'immagine modificata in memoria.
+     */
     private BufferedImage creaImmagineRuotata(Image imgOriginale, int targetWidth, int targetHeight, int angoloGradi) {
         double radianti = Math.toRadians(angoloGradi);
         double sin = Math.abs(Math.sin(radianti));
@@ -375,72 +604,32 @@ public class PannelloGioco extends Pannello {
     }
 
     /**
-     * Restituisce il bottone per tornare al menù.
-     * Complessità computazionale: O(1).
-     *
-     * @return il bottone menù.
+     * @return il bottone adibito al ritorno al Menù.
      */
-    public JButton getBottoneMenu() {
-        return bottoneMenu;
-    }
+    public JButton getBottoneMenu() { return bottoneMenu; }
 
     /**
-     * Restituisce il bottone per confermare la carta giocata.
-     * Complessità computazionale: O(1).
-     *
-     * @return il bottone conferma.
+     * @return il bottone adibito alla conferma del proprio turno.
      */
-    public JButton getBottoneConferma() {
-        return bottoneConferma;
-    }
+    public JButton getBottoneConferma() { return bottoneConferma; }
 
     /**
-     * Restituisce la carta attualmente selezionata dall'utente in interfaccia.
-     * Complessità computazionale: O(1).
-     *
-     * @return la carta selezionata.
+     * @return La carta selezionata o null se nessuna carta risulta selezionata.
      */
-    public Carta getCartaSelezionata() {
-        return cartaSelezionata;
-    }
+    public Carta getCartaSelezionata() { return cartaSelezionata; }
 
     /**
-     * Imposta o resetta la carta selezionata.
-     * Complessità computazionale: O(1).
-     *
-     * @param cartaSelezionata la carta da impostare come selezionata.
+     * Imposta la carta selezionata attivamente dalla UI del tavolo.
+     * @param cartaSelezionata La carta in uso.
      */
-    public void setCartaSelezionata(Carta cartaSelezionata) {
-        this.cartaSelezionata = cartaSelezionata;
-    }
+    public void setCartaSelezionata(Carta cartaSelezionata) { this.cartaSelezionata = cartaSelezionata; }
 
     /**
-     * Restituisce il giocatore umano associato a questa vista.
-     * Complessità computazionale: O(1).
+     * Notificato dall'Observer, innesca il ricalcolo e aggiornamento generale
+     * della view ricevendo lo stato di PartitaBriscola.
      *
-     * @return il giocatore umano.
-     */
-    public Giocatore getGiocatoreUmano() {
-        return giocatoreUmano;
-    }
-
-    /**
-     * Restituisce il numero del turno attuale salvato nel pannello (0 se turno utente).
-     * Complessità computazionale: O(1).
-     *
-     * @return il numero del turno.
-     */
-    public int getNumeroTurno() {
-        return numeroTurno;
-    }
-
-    /**
-     * Riceve gli aggiornamenti di stato dal Model (pattern Observer).
-     * Aggiorna lo stato interno del pannello e ridisegna gli elementi visivi necessari.
-     * Complessità computazionale: O(1) per i metodi di aggiornamento Swing.
-     *
-     * @param partita l'oggetto Observable (PartitaBriscola) che ha notificato un cambiamento.
-     * @param arg argomenti extra (non usati).
+     * @param partita l'oggetto Observable di base.
+     * @param arg Eventuali argomenti associati alla chiamata.
      */
     @Override
     public void update(Observable partita, Object arg) {
@@ -449,14 +638,13 @@ public class PannelloGioco extends Pannello {
         this.cartaSelezionata = null;
         this.carteTavolo = partitaBriscola.getCarteSulTavolo();
         this.numeroTurno = partitaBriscola.getNumeroTurno();
+        this.briscola = partitaBriscola.getBriscola();
+        this.mazzo = partitaBriscola.getMazzo();
 
-        // Abilita il bottone di conferma ESCLUSIVAMENTE se è il turno dell'utente (0)
+        labelPunti.setText("Punti: " + partitaBriscola.getPunti());
+
         bottoneConferma.setEnabled(this.numeroTurno == 0);
 
-        disegnaCarteGiocatore();
-        disegnaCarteAlleato();
-        disegnaCarteNemico1();
-        disegnaCarteNemico2();
-        disegnaCarteTavolo();
+        aggiornaInterfaccia();
     }
 }

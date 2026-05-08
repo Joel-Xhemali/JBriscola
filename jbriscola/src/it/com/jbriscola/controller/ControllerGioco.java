@@ -84,6 +84,11 @@ public class ControllerGioco {
 
             vista.getPannelloGioco().ifPresent(nuovaPartita::addObserver);
             
+            // Abilita esplicitamente il bottone se il turno iniziale è zero (Umano)
+            if (nuovaPartita.getNumeroTurno() == 0) {
+                vista.getPannelloGioco().ifPresent(p -> p.getBottoneConferma().setEnabled(true));
+            }
+            
             // Innesca i turni dei bot nel caso in cui il Random iniziale non abbia scelto l'Umano (0)
             nuovaPartita.eseguiTurniBot();
         });

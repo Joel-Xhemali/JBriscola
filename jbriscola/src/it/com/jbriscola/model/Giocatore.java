@@ -9,7 +9,7 @@ public abstract class Giocatore {
     private String nome;
     private List<Carta> mano;
     private String avatar;
-    private double puntiTavolo;
+    private Carta cartaScartata;
 
     /**
      * Costruttore della classe astratta Giocatore.
@@ -66,24 +66,28 @@ public abstract class Giocatore {
         this.mano = mano;
     }
 
-    /**
-     * Restituisce i punti attualmente guadagnati dal giocatore nel corso della partita.
-     * Complessità computazionale: O(1).
-     *
-     * @return i punti attuali del giocatore
-     */
-    public double getPuntiTavolo() {
-        return puntiTavolo;
+    public void pesca(Carta carta){
+        this.mano.add(carta);
     }
 
     /**
-     * Imposta il punteggio accumulato dal giocatore.
+     * Restituisce la carta che il giocatore ha scartato (giocato) sul tavolo.
      * Complessità computazionale: O(1).
      *
-     * @param puntiTavolo il nuovo punteggio da assegnare
+     * @return la carta scartata dal giocatore
      */
-    public void setPuntiTavolo(double puntiTavolo) {
-        this.puntiTavolo = puntiTavolo;
+    public Carta getCartaScartata() {
+        return cartaScartata;
+    }
+
+    /**
+     * Imposta la carta scartata dal giocatore durante il suo turno.
+     * Complessità computazionale: O(1).
+     *
+     * @param cartaScartata la carta da assegnare come scartata
+     */
+    public void setCartaScartata(Carta cartaScartata) {
+        this.cartaScartata = cartaScartata;
     }
 
     /**

@@ -74,7 +74,7 @@ public class GiocoBriscola extends Observable {
     public void iniziaPartita(Giocatore giocatore) {
         this.giocatore = Optional.of(giocatore);
         System.out.println(giocatore);
-        
+
         // Pattern Matching per instanceof (Java 16+)
         if (giocatore instanceof Umano umano) {
             partitaCorrente = Optional.of(new PartitaBriscola(this, umano));
