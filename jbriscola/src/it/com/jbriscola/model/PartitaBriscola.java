@@ -33,7 +33,6 @@ public class PartitaBriscola extends Observable {
     /**
      * Costruttore della classe PartitaBriscola.
      * Inizializza una nuova partita, distribuendo le carte e impostando lo stato iniziale.
-     * Complessità computazionale: O(1) per l'inizializzazione e la distribuzione delle carte (numero fisso di operazioni).
      *
      * @param gioco     Il riferimento al modello principale del gioco.
      * @param giocatore L'umano che partecipa alla partita.
@@ -62,7 +61,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Restituisce il riferimento al modello principale del gioco.
-     * Complessità computazionale: O(1).
      *
      * @return il modello del gioco.
      */
@@ -72,7 +70,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Imposta il riferimento al modello principale del gioco.
-     * Complessità computazionale: O(1).
      *
      * @param gioco il nuovo modello del gioco da impostare.
      */
@@ -82,7 +79,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Restituisce lo stato attuale della partita (IN_CORSO, TERMINATA, PERSA, VINTA).
-     * Complessità computazionale: O(1).
      *
      * @return lo stato corrente della partita.
      */
@@ -92,7 +88,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Restituisce il giocatore umano.
-     * Complessità computazionale: O(1).
      *
      * @return il giocatore umano.
      */
@@ -103,7 +98,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Restituisce il bot alleato del giocatore umano.
-     * Complessità computazionale: O(1).
      *
      * @return il bot alleato.
      */
@@ -114,7 +108,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Restituisce il primo bot nemico.
-     * Complessità computazionale: O(1).
      *
      * @return il primo bot nemico.
      */
@@ -125,7 +118,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Restituisce il secondo bot nemico.
-     * Complessità computazionale: O(1).
      *
      * @return il secondo bot nemico.
      */
@@ -135,7 +127,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Restituisce la carta che determina il seme di briscola per la partita.
-     * Complessità computazionale: O(1).
      *
      * @return La carta briscola.
      */
@@ -145,7 +136,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Restituisce il mazzo di carte utilizzato nella partita corrente.
-     * Complessità computazionale: O(1).
      *
      * @return il mazzo della partita.
      */
@@ -155,7 +145,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Restituisce la somma dei punti del giocatore.
-     * Complessità computazionale: O(1).
      *
      * @return il totale dei punti accumulati.
      */
@@ -165,7 +154,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Restituisce la somma dei punti dei nemici.
-     * Complessità computazionale: O(1).
      *
      * @return il totale dei punti accumulati.
      */
@@ -175,7 +163,6 @@ public class PartitaBriscola extends Observable {
 
     /**
      * Restituisce la lista delle carte attualmente sul tavolo.
-     * Complessità computazionale: O(1).
      *
      * @return la lista delle carte sul tavolo.
      */
@@ -183,13 +170,17 @@ public class PartitaBriscola extends Observable {
         return carteSulTavolo;
     }
 
+    /**
+     * Restituisce la somma dei punti delle carte scartate in una mano
+     *
+     * @return somma dei punti delle carte sul tavolo
+     */
     private int calcolaPuntiSulTavolo() {
         return carteSulTavolo.stream().mapToInt(Carta::getPuntiCarta).sum();
     }
 
     /**
      * Restituisce il numero del turno corrente (0 per il giocatore umano, 1-3 per i bot).
-     * Complessità computazionale: O(1).
      *
      * @return il numero del turno.
      */
@@ -197,6 +188,10 @@ public class PartitaBriscola extends Observable {
         return numeroTurno;
     }
 
+    /**
+     * Distribuisce le carte ad ogni giocatore partendo dal giocatore che deve iniziare il turno
+     * Se è il primo turno (giocatore ha mano Null) deve distribuire 3 carte altrimenti 1 sola
+     */
     private void distribuisciCarte() {
         int nGiocatore = numeroTurno;
         for (int i = 0; i < 4; i++) {
@@ -213,7 +208,6 @@ public class PartitaBriscola extends Observable {
     /**
      * Un giocatore scarta una carta. La carta viene aggiunta al tavolo, il turno avanza,
      * e se ci sono 4 carte sul tavolo, la presa viene risolta.
-     * Complessità computazionale: O(1) per le operazioni di lista e aggiornamento stato.
      *
      * @param giocatore il giocatore che scarta la carta.
      * @param carta     la carta che viene scartata.
@@ -233,20 +227,20 @@ public class PartitaBriscola extends Observable {
             isAlleati = isAlleato(giocatore);
         }
 
-        // 1. Avanza il turno in modo circolare tra i 4 giocatori (0, 1, 2, 3, poi torna a 0)
+        // Avanza il turno in modo circolare tra i 4 giocatori (0, 1, 2, 3, poi torna a 0)
         numeroTurno = (numeroTurno + 1) % 4;
 
         setChanged();
         notifyObservers();
 
-        // 2. Controlla se la presa è conclusa (4 carte sul tavolo)
+        // Controlla se la presa è conclusa (4 carte sul tavolo)
         if (carteSulTavolo.size() == 4) {
             // Utilizziamo un javax.swing.Timer al posto di Thread.sleep per evitare di bloccare l'interfaccia grafica
             Timer t = new Timer(2000, e -> risolviPresa());
             t.setRepeats(false);
             t.start();
         } else {
-            // 3. Se la presa non è finita e il turno corrente NON è dell'umano (0), fai giocare i bot
+            // Se la presa non è finita e il turno corrente NON è dell'umano (0), fai giocare i bot
             if (numeroTurno != 0 && stato == StatoPartita.IN_CORSO) {
                 eseguiTurniBot();
             }
@@ -256,17 +250,15 @@ public class PartitaBriscola extends Observable {
     /**
      * Manda in esecuzione i turni sequenziali dei bot finché non torna il turno dell'umano
      * o finché la presa non è terminata.
-     * Complessità computazionale: O(1) in quanto il numero massimo di bot è fisso (3).
      */
     public void eseguiTurniBot() {
-        // Utilizziamo un Timer di Swing per non bloccare l'interfaccia grafica.
+        // Utilizzo un Timer di Swing per non bloccare l'interfaccia grafica.
         // In questo modo, diamo tempo all'utente di vedere le mosse e la View può aggiornarsi.
         Timer timer = new Timer(2000, e -> {
             if (numeroTurno != 0 && carteSulTavolo.size() < 4) {
                 Giocatore botDiTurno = getGiocatoreDalTurno(numeroTurno);
 
                 Carta cartaScelta = sceltaCarta(botDiTurno);
-                // Il bot scarta la sua carta. Questo invocherà nuovamente scarta()
                 scarta(botDiTurno, cartaScelta);
 
             }
@@ -275,94 +267,114 @@ public class PartitaBriscola extends Observable {
         timer.start();
     }
 
+    /**
+     * Metodo che gestisce la scelta della carta da scartare per il Bot secondo una "Intelligenza Artificiale" base.
+     * A seconda della carta che comanda sul tavolo e alle carte che ha in mano il bot,
+     * la scelta della carta da scartare può essere tra "Liscio", "Carico", "Briscola grande", "Briscola piccola" oppure
+     * una carta dello stesso seme ma con una forza maggiore.
+     *
+     * @param botDiTurno Giocatore che deve scartare la carta
+     * @return Carta scartata dal bot
+     */
     private Carta sceltaCarta(Giocatore botDiTurno) {
-        Carta cartaScelta = null;
-        // Intelligenza Artificiale base: gioca la prima carta disponibile nella mano
-        if (!botDiTurno.getMano().isEmpty()) {
+        List<Carta> mano = botDiTurno.getMano();
+        if (mano.isEmpty()) return null;
 
-            boolean giocaAFavore = (isAlleato(botDiTurno) && isAlleati) || (!isAlleato(botDiTurno) && !isAlleati);
-            boolean briscolona = calcolaPuntiSulTavolo() >= 9 && !giocaAFavore;
-            boolean briscolina = (5 <= calcolaPuntiSulTavolo() && calcolaPuntiSulTavolo() < 9) && !giocaAFavore;
-            boolean carico = false;
-            boolean punti = false;
+        // Ordino la mano in base alla forza
+        List<Carta> manoOrdinata = mano.stream()
+                .sorted(Comparator.comparingInt(Carta::getForzaCarta))
+                .toList();
 
-            List<Carta> cartaSuperaComanda = null;
-            if (cartaComanda != null) {
-                carico = (carteSulTavolo.size()== 3 && giocaAFavore) ||
-                            (cartaComanda.getSeme() == briscola.getSeme() && cartaComanda.getForzaCarta()>=6) && giocaAFavore;
-                punti = (carteSulTavolo.size()== 3 && giocaAFavore) ||
-                        (cartaComanda.getSeme() == briscola.getSeme() && cartaComanda.getForzaCarta()<6) && giocaAFavore;
+        List<Carta> carichi = new ArrayList<>();
+        List<Carta> punti = new ArrayList<>();
+        List<Carta> lisci = new ArrayList<>();
+        List<Carta> briscoloneUtili = new ArrayList<>();
+        List<Carta> briscolineUtili = new ArrayList<>();
+        List<Carta> briscoleInutili = new ArrayList<>();
+        List<Carta> superaComanda = new ArrayList<>();
 
-                cartaSuperaComanda = botDiTurno.getMano().stream()
-                        .filter(c -> c.getSeme() == cartaComanda.getSeme() && c.getSeme() != briscola.getSeme())
-                        .filter(c -> c.getForzaCarta() > cartaComanda.getForzaCarta())
-                        .sorted(Comparator.comparingInt(Carta::getForzaCarta))
-                        .toList();
-            }
+        // Per ogni carta in mano la inserisco in una delle liste qui sopra
+        for (Carta c : manoOrdinata) {
+            boolean isBriscola = c.getSeme() == briscola.getSeme();
+            int puntiCarta = c.getPuntiCarta();
 
-            // Logica per identificare se il bot possiede carichi (punti >= 10: Assi o Tre) o briscole
-            var carichiInMano = botDiTurno.getMano().stream()
-                    .filter(c -> c.getPuntiCarta() >= 10)
-                    .filter(c -> c.getSeme() != briscola.getSeme())
-                    .sorted(Comparator.comparingInt(Carta::getForzaCarta))
-                    .toList();
+            boolean batteComanda = cartaComanda == null ||
+                    (isBriscola && cartaComanda.getSeme() != briscola.getSeme()) ||
+                    (c.getSeme() == cartaComanda.getSeme() && c.getForzaCarta() > cartaComanda.getForzaCarta());
 
-            var puntiInMano = botDiTurno.getMano().stream()
-                    .filter(c -> c.getPuntiCarta() > 0 && c.getPuntiCarta() < 10)
-                    .filter(c -> c.getSeme() != briscola.getSeme())
-                    .sorted(Comparator.comparingInt(Carta::getForzaCarta))
-                    .toList();
-
-            var briscoloneInMano = botDiTurno.getMano().stream()
-                    .filter(c -> c.getSeme() == briscola.getSeme())
-                    .filter(c -> c.getPuntiCarta() >= 10)
-                    .sorted(Comparator.comparingInt(Carta::getForzaCarta))
-                    .toList();
-
-            var briscolineInMano = botDiTurno.getMano().stream()
-                    .filter(c -> c.getSeme() == briscola.getSeme())
-                    .filter(c -> c.getPuntiCarta() < 10)
-                    .sorted(Comparator.comparingInt(Carta::getForzaCarta))
-                    .toList();
-
-            var lisciInMano = botDiTurno.getMano().stream()
-                    .filter(c -> c.getPuntiCarta() == 0)
-                    .filter(c -> c.getSeme() != briscola.getSeme())
-                    .sorted(Comparator.comparingInt(Carta::getForzaCarta))
-                    .toList();
-
-            if (!giocaAFavore && cartaSuperaComanda != null && !cartaSuperaComanda.isEmpty()) {
-                // Se il bot ha una carta dello stesso seme ma con valore più grande
-                cartaScelta = cartaSuperaComanda.getLast();
-            } else if (carico && !carichiInMano.isEmpty()) {
-                // Se il bot ha un carico e la situazione è favorevole (alleato comanda o colpo sicuro)
-                cartaScelta = carichiInMano.getLast();
-            } else if (briscolona && !briscoloneInMano.isEmpty()) {
-                // Se ci sono molti punti a terra e non comanda l'alleato, prova a prendere con una briscola forte
-                cartaScelta = briscoloneInMano.getLast();
-            } else if (briscolina && !briscoloneInMano.isEmpty()) {
-                // Se ci sono alcuni punti a terra e non comanda l'alleato, prova a prendere con una briscola piccola
-                cartaScelta = briscolineInMano.getFirst();
-            } else if (punti && !puntiInMano.isEmpty()) {
-                // Se c'è una briscolina per terra e la situazione è favorevole
-                cartaScelta = puntiInMano.getLast();
+            if (isBriscola) {
+                if (batteComanda) {
+                    if (puntiCarta >= 10) briscoloneUtili.add(c);
+                    else briscolineUtili.add(c);
+                } else briscoleInutili.add(c);
             } else {
-                // Se non ho altra scelta procedo in ordine di grandezza
-                if (!lisciInMano.isEmpty()) cartaScelta = lisciInMano.getFirst();
-                else if (!puntiInMano.isEmpty()) cartaScelta = puntiInMano.getFirst();
-                else if (!briscolineInMano.isEmpty()) cartaScelta = briscolineInMano.getFirst();
-                else if (!briscoloneInMano.isEmpty()) cartaScelta = briscoloneInMano.getFirst();
-                else if (!carichiInMano.isEmpty()) cartaScelta = carichiInMano.getFirst();
-            }
+                if (puntiCarta >= 10) carichi.add(c);
+                else if (puntiCarta > 0) punti.add(c);
+                else lisci.add(c);
 
+                if (cartaComanda != null && c.getSeme() == cartaComanda.getSeme() && batteComanda) {
+                    superaComanda.add(c);
+                }
+            }
         }
-        return cartaScelta;
+
+        boolean giocaAFavore = (isAlleato(botDiTurno) && isAlleati) || (!isAlleato(botDiTurno) && !isAlleati);
+        int puntiTavolo = calcolaPuntiSulTavolo();
+
+        boolean tavolataPesante = puntiTavolo >= 9 && !giocaAFavore;
+        boolean tavolataMedia = (puntiTavolo >= 5 && puntiTavolo < 9) && !giocaAFavore;
+
+        boolean caricaSicura = false;
+        boolean puntiSicuri = false;
+
+        // Se il bot è l'ultimo del turno e la giocata è a favore allora posso caricare o mettere punti
+        if (cartaComanda != null && giocaAFavore) {
+            caricaSicura = (carteSulTavolo.size() == 3) ||
+                    (cartaComanda.getSeme() == briscola.getSeme() && cartaComanda.getForzaCarta() >= 6);
+            puntiSicuri = (carteSulTavolo.size() == 3) ||
+                    (cartaComanda.getSeme() == briscola.getSeme() && cartaComanda.getForzaCarta() < 6);
+        }
+
+        // Se la mano non è di alleati ma posso superare la carta
+        if (!giocaAFavore && !superaComanda.isEmpty()) {
+            return superaComanda.getLast();
+        }
+        // Se posso caricare sicuro ed ho un carico in mano
+        if (caricaSicura && !carichi.isEmpty()) {
+            return carichi.getLast();
+        }
+        // Se ci sono molti punti sul tavolo ed ho una briscola grande
+        if (tavolataPesante && !briscoloneUtili.isEmpty()) {
+            return briscoloneUtili.getLast();
+        }
+        // Se c'è qualche punto sul tabolo ed ho una briscola piccola
+        if (tavolataMedia && !briscolineUtili.isEmpty()) {
+            return briscolineUtili.getFirst();
+        }
+        if ((tavolataMedia || tavolataPesante) && cartaComanda.getSeme() != briscola.getSeme()) {
+            if (!briscoleInutili.isEmpty()) return briscoleInutili.getFirst();
+            else if (!briscolineUtili.isEmpty()) return briscolineUtili.getFirst();
+            else if (!briscoloneUtili.isEmpty()) return briscoloneUtili.getFirst();
+        }
+        // Se sono l'ultimo a giocare con la mano di alleati ed ho punti in mano
+        if (puntiSicuri && !punti.isEmpty()) {
+            return punti.getLast();
+        }
+
+        // Nel caso nessuno delle precedenti condizioni è vera allora devo scartare la carta
+        // con il minimo danno
+        if (!lisci.isEmpty()) return lisci.getFirst();
+        if (!punti.isEmpty()) return punti.getFirst();
+        if (!briscoleInutili.isEmpty()) return briscoleInutili.getFirst();
+        if (!briscolineUtili.isEmpty()) return briscolineUtili.getFirst();
+        if (!briscoloneUtili.isEmpty()) return briscoloneUtili.getFirst();
+        if (!carichi.isEmpty()) return carichi.getFirst();
+
+        return null;
     }
 
     /**
-     * Restituisce il giocatore corrispondente al turno attuale utilizzando
-     * lo switch expression di Java 21.
-     * Complessità computazionale: O(1).
+     * Restituisce il giocatore corrispondente al turno attuale
      *
      * @param turno il numero del turno (0-3).
      * @return il giocatore associato al turno.
@@ -378,6 +390,12 @@ public class PartitaBriscola extends Observable {
         };
     }
 
+    /**
+     * Restituisce True o False a seconda se il giocatore è un alleato
+     *
+     * @param giocatore
+     * @return True o False
+     */
     private boolean isAlleato(Giocatore giocatore) {
         return giocatore.equals(botAlleato) || giocatore.equals(this.giocatore);
     }
@@ -385,7 +403,6 @@ public class PartitaBriscola extends Observable {
     /**
      * Risolve la presa corrente quando ci sono 4 carte sul tavolo.
      * Stabilisce il vincitore, assegna i punti e ripulisce il tavolo.
-     * Complessità computazionale: O(1) in quanto opera su un numero fisso di carte (4).
      */
     private void risolviPresa() {
         int giocatoreWin = 0;
@@ -414,7 +431,7 @@ public class PartitaBriscola extends Observable {
                     else if (puntiNemici == puntiGiocatore) stato = StatoPartita.PAREGGIO;
                     else stato = StatoPartita.VINTA;
                     gioco.terminaPartita();
-                }else{
+                } else {
                     // Mazzo
                     mazzo = Mazzo.getMazzo();
                     this.briscola = mazzo.pesca();

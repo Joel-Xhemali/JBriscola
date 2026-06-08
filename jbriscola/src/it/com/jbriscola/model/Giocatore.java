@@ -15,7 +15,6 @@ public abstract class Giocatore {
     /**
      * Costruttore della classe astratta Giocatore.
      * Inizializza i parametri di base per ogni giocatore (nome, avatar e carte in mano).
-     * Complessità computazionale: O(1).
      *
      * @param nome   il nome del giocatore
      * @param avatar il percorso dell'immagine del profilo del giocatore
@@ -29,7 +28,6 @@ public abstract class Giocatore {
 
     /**
      * Restituisce il nome del giocatore.
-     * Complessità computazionale: O(1).
      *
      * @return il nome del giocatore
      */
@@ -39,7 +37,6 @@ public abstract class Giocatore {
 
     /**
      * Restituisce la lista di carte attualmente in mano al giocatore.
-     * Complessità computazionale: O(1).
      *
      * @return la lista delle carte
      */
@@ -49,7 +46,6 @@ public abstract class Giocatore {
 
     /**
      * Imposta le carte in mano al giocatore.
-     * Complessità computazionale: O(1).
      *
      * @param mano la nuova lista di carte
      */
@@ -57,13 +53,17 @@ public abstract class Giocatore {
         this.mano = mano;
     }
 
+    /**
+     * Aggiunge alla mano la carta passata nei parametri
+     *
+     * @param carta Carta pescata dal mazzo
+     */
     public void pesca(Carta carta){
         this.mano.add(carta);
     }
 
     /**
      * Restituisce la carta che il giocatore ha scartato (giocato) sul tavolo.
-     * Complessità computazionale: O(1).
      *
      * @return la carta scartata dal giocatore
      */
@@ -73,7 +73,6 @@ public abstract class Giocatore {
 
     /**
      * Imposta la carta scartata dal giocatore durante il suo turno.
-     * Complessità computazionale: O(1).
      *
      * @param cartaScartata la carta da assegnare come scartata
      */
@@ -83,7 +82,6 @@ public abstract class Giocatore {
 
     /**
      * Restituisce il percorso dell'immagine del profilo del giocatore.
-     * Complessità computazionale: O(1).
      *
      * @return il percorso dell'avatar
      */
@@ -93,7 +91,6 @@ public abstract class Giocatore {
 
     /**
      * Restituisce una stringa formattata con le informazioni principali del giocatore.
-     * Complessità computazionale: O(N) dove N è il numero di carte in mano (a causa del toString di List).
      *
      * @return una stringa contenente nome, carte in mano e percorso dell'avatar
      */
@@ -108,7 +105,6 @@ public abstract class Giocatore {
      * Confronta questo giocatore con l'oggetto specificato per verificarne l'uguaglianza.
      * Due giocatori sono considerati uguali se hanno lo stesso nome, la stessa mano,
      * lo stesso avatar e la stessa carta scartata.
-     * Complessità computazionale: O(N) dove N è il numero di carte in mano.
      *
      * @param o l'oggetto da confrontare con questo giocatore
      * @return true se l'oggetto è uguale a questo giocatore, false altrimenti
@@ -122,7 +118,6 @@ public abstract class Giocatore {
 
     /**
      * Calcola il valore hash per questo giocatore basandosi sui suoi attributi.
-     * Complessità computazionale: O(N) dove N è il numero di carte in mano.
      *
      * @return il valore hash calcolato
      */

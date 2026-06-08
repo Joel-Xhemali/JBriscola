@@ -29,7 +29,6 @@ public enum Valore {
 
     /**
      * Restituisce i punti associati al valore della carta.
-     * Complessità computazionale: O(1).
      *
      * @return i punti attribuiti al valore specifico.
      */

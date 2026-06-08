@@ -10,7 +10,6 @@ public class Umano extends Giocatore{
 
     /**
      * Costruttore completo della classe Umano.
-     * Complessità computazionale: O(1).
      *
      * @param nome il nome del giocatore.
      * @param avatar il percorso dell'avatar del giocatore.
@@ -22,7 +21,6 @@ public class Umano extends Giocatore{
 
     /**
      * Costruttore semplificato della classe Umano, senza una mano iniziale.
-     * Complessità computazionale: O(1).
      *
      * @param nome il nome del giocatore.
      * @param avatar il percorso dell'avatar del giocatore.

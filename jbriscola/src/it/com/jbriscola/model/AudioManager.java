@@ -11,6 +11,9 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+/**
+ * Classe per la gestione dell'audio
+ */
 public class AudioManager {
 
     private static AudioManager instance;

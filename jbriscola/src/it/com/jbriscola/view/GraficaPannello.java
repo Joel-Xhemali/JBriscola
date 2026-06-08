@@ -34,14 +34,12 @@ public class GraficaPannello {
 
     /**
      * Costruttore vuoto. Inizializza l'oggetto con mappe vuote per colori e font.
-     * Complessità computazionale: O(1).
      */
     public GraficaPannello() {
     }
 
     /**
      * Costruttore che accetta mappe preesistenti per colori e font.
-     * Complessità computazionale: O(1).
      *
      * @param colori mappa dei colori associati ai componenti.
      * @param fonts  mappa dei font associati ai testi.
@@ -53,7 +51,6 @@ public class GraficaPannello {
 
     /**
      * Restituisce la mappa dei colori.
-     * Complessità computazionale: O(1).
      *
      * @return la mappa dei colori.
      */
@@ -63,7 +60,6 @@ public class GraficaPannello {
 
     /**
      * Crea un campo di testo (JTextField) formattato con il font di default.
-     * Complessità computazionale: O(1).
      *
      * @param defaultValue il testo iniziale da mostrare nel campo.
      * @return il JTextField creato e formattato.
@@ -77,7 +73,6 @@ public class GraficaPannello {
 
     /**
      * Crea un'etichetta di testo adibita a titolo (JLabel).
-     * Complessità computazionale: O(1).
      *
      * @param testo il contenuto dell'etichetta.
      * @return l'etichetta titolo.
@@ -88,7 +83,6 @@ public class GraficaPannello {
 
     /**
      * Crea un'etichetta di testo normale (JLabel).
-     * Complessità computazionale: O(1).
      *
      * @param testo il contenuto dell'etichetta.
      * @return l'etichetta testuale.
@@ -99,7 +93,6 @@ public class GraficaPannello {
 
     /**
      * Crea un'etichetta di testo normale con un colore specifico.
-     * Complessità computazionale: O(1).
      *
      * @param testo  il contenuto dell'etichetta.
      * @param colore il colore del testo.
@@ -109,10 +102,23 @@ public class GraficaPannello {
         return creaTesto(TipoTesto.NORMALE, testo, colore);
     }
 
+    /**
+     * Crea un'etichetta di testo dato un TipoTesto ed una stringa
+     * @param t il Tipo di testo
+     * @param contenuto la stringa da inserire
+     * @return l'etichetta testuale generata
+     */
     private JLabel creaTesto(TipoTesto t, String contenuto) {
         return creaTesto(contenuto, Optional.ofNullable(colori.get(t)), Optional.ofNullable(fonts.get(t)));
     }
 
+    /**
+     * Crea un'etichetta di testo dato un TipoTesto, una stringa ed il colore
+     * @param t il Tipo di testo
+     * @param contenuto la stringa da inserire
+     * @param colore il colore del testo
+     * @return l'etichetta testuale generata
+     */
     private JLabel creaTesto(TipoTesto t, String contenuto, Color colore) {
         return creaTesto(contenuto, Optional.of(colore), Optional.ofNullable(fonts.get(t)));
     }
@@ -128,7 +134,6 @@ public class GraficaPannello {
 
     /**
      * Crea un bottone (JButton) formattato con i colori e i font di base.
-     * Complessità computazionale: O(1).
      *
      * @param testo l'etichetta del bottone.
      * @return il bottone formattato.
@@ -154,7 +159,6 @@ public class GraficaPannello {
 
     /**
      * Crea un'etichetta contenente un'immagine caricata dal percorso indicato.
-     * Complessità computazionale: O(1) in quanto la creazione dell'etichetta delega al caricatore di icone.
      *
      * @param path il percorso del file immagine.
      * @return il JLabel con l'immagine.
@@ -166,7 +170,6 @@ public class GraficaPannello {
     /**
      * Genera e configura un oggetto GridBagConstraints per il posizionamento in un GridBagLayout.
      * Usa i pesi di default (weightx=1, weighty=1).
-     * Complessità computazionale: O(1).
      *
      * @param x colonna della griglia.
      * @param y riga della griglia.
@@ -181,7 +184,6 @@ public class GraficaPannello {
 
     /**
      * Genera e configura un oggetto GridBagConstraints con parametri completi, compresi i pesi.
-     * Complessità computazionale: O(1).
      *
      * @param x  colonna della griglia.
      * @param y  riga della griglia.

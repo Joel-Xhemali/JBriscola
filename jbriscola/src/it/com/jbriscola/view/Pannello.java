@@ -36,7 +36,6 @@ public abstract class Pannello extends JPanel implements Observer {
     /**
      * Costruttore della classe astratta Pannello.
      * Applica un LayoutManager personalizzato.
-     * Complessità computazionale: O(1).
      *
      * @param layout il LayoutManager da applicare al pannello.
      */
@@ -47,7 +46,6 @@ public abstract class Pannello extends JPanel implements Observer {
     /**
      * Costruttore della classe astratta Pannello.
      * Imposta le preferenze grafiche da usare.
-     * Complessità computazionale: O(1).
      *
      * @param grafica le opzioni grafiche per i colori e i font.
      */
@@ -58,7 +56,6 @@ public abstract class Pannello extends JPanel implements Observer {
     /**
      * Costruttore completo della classe astratta Pannello.
      * Imposta il LayoutManager e le preferenze grafiche.
-     * Complessità computazionale: O(1).
      *
      * @param layout il LayoutManager da applicare al pannello.
      * @param grafica le opzioni grafiche per i colori e i font.
@@ -70,7 +67,6 @@ public abstract class Pannello extends JPanel implements Observer {
 
     /**
      * Restituisce le opzioni grafiche impostate per questo pannello.
-     * Complessità computazionale: O(1).
      *
      * @return l'oggetto GraficaPannello associato.
      */

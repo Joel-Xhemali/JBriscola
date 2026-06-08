@@ -22,7 +22,6 @@ public class PannelloStatistiche extends Pannello {
 
     /**
      * Costruttore base di PannelloStatistiche. Utilizza la grafica di default.
-     * Complessità computazionale: O(1).
      */
     public PannelloStatistiche() {
         this(GRAFICA_DEFAULT);
@@ -31,7 +30,6 @@ public class PannelloStatistiche extends Pannello {
 
     /**
      * Costruttore completo. Inizializza gli elementi grafici del pannello delle statistiche.
-     * Complessità computazionale: O(1).
      *
      * @param grafica le preferenze grafiche da usare.
      */
@@ -69,7 +67,6 @@ public class PannelloStatistiche extends Pannello {
 
     /**
      * Restituisce la label usata come titolo della schermata.
-     * Complessità computazionale: O(1).
      *
      * @return la JLabel contenente il titolo.
      */
@@ -79,7 +76,6 @@ public class PannelloStatistiche extends Pannello {
 
     /**
      * Restituisce la label che contiene le statistiche della partita aggiornate.
-     * Complessità computazionale: O(1).
      *
      * @return la JLabel con le statistiche.
      */
@@ -89,7 +85,6 @@ public class PannelloStatistiche extends Pannello {
 
     /**
      * Restituisce il bottone per tornare al menù principale.
-     * Complessità computazionale: O(1).
      *
      * @return il JButton del menù.
      */
@@ -100,7 +95,6 @@ public class PannelloStatistiche extends Pannello {
     /**
      * Metodo statico che produce una stringa HTML che descrive le statistiche di gioco.
      * Calcola anche automaticamente le partite perse.
-     * Complessità computazionale: O(1).
      *
      * @param partiteGiocate il numero totale delle partite giocate
      * @param partiteVinte   il numero delle partite vinte dal giocatore
@@ -118,7 +112,6 @@ public class PannelloStatistiche extends Pannello {
     /**
      * Metodo dell'interfaccia Observer. Aggiorna il testo visualizzato
      * richiedendo al Model (GiocoBriscola) i nuovi dati.
-     * Complessità computazionale: O(1).
      *
      * @param modello l'oggetto Observable (GiocoBriscola) che ha notificato il cambiamento.
      * @param arg argomenti extra (non usati).
@@ -126,10 +119,6 @@ public class PannelloStatistiche extends Pannello {
     @Override
     public void update(Observable modello, Object arg) {
         GiocoBriscola g = (GiocoBriscola) modello;
-        /*
-         * i dati sulle partite precedenti vengono aggiornati prendendo la versione più
-         * recente dal modello
-         */
         statistiche.setText(generaStatistiche(g.getPartiteGiocate(), g.getPartiteVinte(), g.getPartitePerse()));
     }
 }

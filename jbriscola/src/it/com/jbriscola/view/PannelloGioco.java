@@ -69,7 +69,6 @@ public class PannelloGioco extends Pannello {
 
         /**
          * Crea un nuovo PannelloProfilo.
-         * Complessità computazionale: O(1).
          *
          * @param giocatore Il giocatore da rappresentare.
          */
@@ -87,7 +86,6 @@ public class PannelloGioco extends Pannello {
 
         /**
          * Aggiorna la grafica del pannello in base alle nuove dimensioni fornite.
-         * Complessità computazionale: O(1) (ammortizzato grazie alla cache).
          *
          * @param targetSize Dimensione desiderata per l'avatar.
          * @param fontSize   Dimensione desiderata per il font.
@@ -107,7 +105,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Costruttore di default della classe PannelloGioco.
-     * Complessità computazionale: O(1).
      *
      * @param giocatori Lista di giocatori che partecipano alla partita.
      */
@@ -117,7 +114,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Costruttore completo della classe PannelloGioco.
-     * Complessità computazionale: O(1).
      *
      * @param grafica   Impostazioni grafiche per il pannello.
      * @param giocatori Lista di giocatori che partecipano alla partita.
@@ -141,7 +137,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Inizializza il layout principale dividendo il pannello in 5 aree.
-     * Complessità computazionale: O(1).
      *
      * @param giocatori I giocatori coinvolti nella partita.
      */
@@ -162,7 +157,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Crea il pannello inferiore contenente le carte del giocatore e i comandi base.
-     * Complessità computazionale: O(1).
      *
      * @return Il pannello configurato.
      */
@@ -197,7 +191,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Crea il pannello centrale, destinato alla rappresentazione del tavolo.
-     * Complessità computazionale: O(1).
      *
      * @return Il pannello del tavolo.
      */
@@ -216,7 +209,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Crea il pannello superiore contenente le carte del bot alleato e il punteggio.
-     * Complessità computazionale: O(1).
      *
      * @return Il pannello configurato.
      */
@@ -260,7 +252,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Crea il pannello di sinistra destinato alle carte e al profilo del nemico 1.
-     * Complessità computazionale: O(1).
      *
      * @return Il pannello configurato.
      */
@@ -282,7 +273,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Crea il pannello di destra destinato alle carte e al profilo del nemico 2.
-     * Complessità computazionale: O(1).
      *
      * @return Il pannello configurato.
      */
@@ -304,7 +294,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Calcola un fattore scalare per ridimensionare la grafica in modo dinamico.
-     * Complessità computazionale: O(1).
      *
      * @return un numero `double` da utilizzare come modificatore.
      */
@@ -317,7 +306,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Aggiorna l'interfaccia interamente, richiamando tutti i metodi di draw dei componenti.
-     * Complessità computazionale: O(N) dove N è il numero di carte da disegnare nei rispettivi panel.
      */
     private void aggiornaInterfaccia() {
         var scala = calcolaFattoreScala();
@@ -350,7 +338,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Aggiorna e ridisegna graficamente le carte attualmente in mano all'utente.
-     * Complessità computazionale: O(C) dove C è il numero di carte in mano (max 3).
      */
     public void disegnaCarteGiocatore() {
         if (vistaGiocatore == null || giocatoreUmano == null) return;
@@ -388,7 +375,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Disegna i dorsi delle carte in mano al bot alleato.
-     * Complessità computazionale: O(C) dove C è il numero di carte.
      */
     public void disegnaCarteAlleato() {
         if (vistaAlleato == null || botAlleato == null) return;
@@ -409,7 +395,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Ridisegna la mano del primo bot nemico.
-     * Complessità computazionale: O(C).
      */
     private void disegnaCarteNemico1() {
         if (vistaSinistra == null || botNemico1 == null) return;
@@ -419,7 +404,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Ridisegna la mano del secondo bot nemico.
-     * Complessità computazionale: O(C).
      */
     private void disegnaCarteNemico2() {
         if (vistaDestra == null || botNemico2 == null) return;
@@ -430,7 +414,6 @@ public class PannelloGioco extends Pannello {
     /**
      * Disegna i dorsi delle carte ruotati verticalmente all'interno di un pannello specifico.
      * Crea un effetto a "ventaglio chiuso" sovrapponendo le carte.
-     * Complessità computazionale: O(C) dove C è il numero di carte.
      *
      * @param pannello Il pannello di destinazione.
      * @param bot      Il giocatore per cui disegnare le carte.
@@ -471,7 +454,6 @@ public class PannelloGioco extends Pannello {
     /**
      * Aggiorna e ridisegna le carte giocate sul tavolo da parte di tutti i giocatori,
      * inclusa la carta briscola in alto a sinistra ed il relativo mazzo.
-     * Complessità computazionale: O(C) dove C è il numero di carte a terra.
      */
     public void disegnaCarteTavolo() {
         if (vistaTavolo == null || carteTavolo == null) return;
@@ -539,7 +521,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Esegue il recupero con caching di un'immagine scalata per massimizzare le performance di rendering.
-     * Complessità computazionale: O(1) ammortizzato.
      *
      * @param id           L'identificativo univoco dell'immagine.
      * @param imgOriginale L'immagine di base.
@@ -564,7 +545,6 @@ public class PannelloGioco extends Pannello {
 
     /**
      * Esegue il recupero con caching di un'immagine scalata e ruotata.
-     * Complessità computazionale: O(1) ammortizzato.
      *
      * @param id           L'identificativo univoco dell'immagine.
      * @param imgOriginale L'immagine di base.

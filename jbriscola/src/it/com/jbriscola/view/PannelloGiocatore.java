@@ -28,7 +28,6 @@ public class PannelloGiocatore extends Pannello {
     /**
      * Costruttore base di PannelloGiocatore.
      * Utilizza la grafica di default e inizializza i componenti grafici.
-     * Complessità computazionale: O(1).
      */
     public PannelloGiocatore() {
         this(GRAFICA_DEFAULT);
@@ -37,7 +36,6 @@ public class PannelloGiocatore extends Pannello {
     /**
      * Costruttore che accetta una grafica personalizzata.
      * Inizializza i componenti per la creazione del profilo utente.
-     * Complessità computazionale: O(1) per l'impostazione.
      *
      * @param grafica la grafica da applicare al pannello.
      */
@@ -51,6 +49,9 @@ public class PannelloGiocatore extends Pannello {
         inizializzaPannello();
     }
 
+    /**
+     * Inizializza il pannello del Giocatore settando i sotto pannelli per il NickName, l'Avatar e il pulsanti Conferma/Menù
+     */
     private void inizializzaPannello() {
         setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
@@ -114,6 +115,7 @@ public class PannelloGiocatore extends Pannello {
         pannelloCentro.add(pannelloAvatar);
         add(pannelloCentro, BorderLayout.CENTER);
 
+        // SOUTH: bottoni Conferma e Menù
         JPanel p = new JPanel(new GridBagLayout());
         p.setOpaque(false);
         GridBagConstraints disp = GraficaPannello.generaDisposizione(4, 0, 2, 1, GridBagConstraints.CENTER);
@@ -125,7 +127,6 @@ public class PannelloGiocatore extends Pannello {
 
     /**
      * Recupera il nickname inserito dall'utente.
-     * Complessità computazionale: O(1).
      *
      * @return la stringa contenente il nickname.
      */
@@ -135,7 +136,6 @@ public class PannelloGiocatore extends Pannello {
 
     /**
      * Recupera il percorso dell'avatar selezionato dall'utente.
-     * Complessità computazionale: O(1).
      *
      * @return il percorso dell'avatar.
      */
@@ -145,7 +145,6 @@ public class PannelloGiocatore extends Pannello {
 
     /**
      * Restituisce il riferimento al bottone di conferma.
-     * Complessità computazionale: O(1).
      *
      * @return il bottone per confermare e giocare.
      */
@@ -155,7 +154,6 @@ public class PannelloGiocatore extends Pannello {
 
     /**
      * Restituisce il riferimento al bottone per tornare al menù.
-     * Complessità computazionale: O(1).
      *
      * @return il bottone menù.
      */
@@ -165,7 +163,6 @@ public class PannelloGiocatore extends Pannello {
 
     /**
      * Aggiorna lo stato del pannello ricevendo la notifica dal Model (pattern Observer).
-     * Complessità computazionale: O(1).
      *
      * @param modello il modello da cui provengono gli aggiornamenti (GiocoBriscola).
      * @param arg     argomenti opzionali.

@@ -17,16 +17,18 @@ public class ControllerGioco implements Observer {
      * Costruttore del Controller. Collega il Model e la View, inizializzando
      * gli observer e i listener per i bottoni dell'interfaccia grafica.
      * Implementa il pattern Observer per disaccoppiare Model e View.
-     * Complessità computazionale: O(1) per l'impostazione, ma l'aggiunta di listener
-     * è costante per ogni componente.
      *
-     * @param gioco Il modello (Model) del gioco.
+     * @param gioco    Il modello (Model) del gioco.
      * @param finestra La finestra principale (View) dell'applicazione.
      */
     public ControllerGioco(GiocoBriscola gioco, FinestraGioco finestra) {
         model = gioco;
         vista = finestra;
-        AudioManager.getInstance().play("assets/1950s Jazz Classics.wav");
+        try {
+            AudioManager.getInstance().play("assets/1950s Jazz Classics.wav");
+        } catch (Exception e) {
+            System.out.println("Error playing Jazz Classics.wav");
+        }
 
         /*
          * il pannello statistiche deve osservare il modello del gioco per avere
@@ -40,6 +42,9 @@ public class ControllerGioco implements Observer {
         inizializzaBottoniGiocatore();
     }
 
+    /**
+     * Metodo di inizializzazione bottoni pannello menù
+     */
     private void inizializzaBottoniMenu() {
         vista.getPannelloMenu().getBottoneGioco().addActionListener(e -> {
             cambiaSchermata(TipoPannello.GIOCATORE);
@@ -50,11 +55,17 @@ public class ControllerGioco implements Observer {
 
     }
 
+    /**
+     * Metodo di inizializzazione bottoni pannello statistiche
+     */
     private void inizializzaBottoniStatistiche() {
         vista.getPannelloStatistiche().getBottoneMenu()
                 .addActionListener(e -> cambiaSchermata(TipoPannello.MENU));
     }
 
+    /**
+     * Metodo di inizializzazione bottoni pannello giocatore
+     */
     private void inizializzaBottoniGiocatore() {
         vista.getPannelloGiocatore().getBottoneMenu()
                 .addActionListener(e -> cambiaSchermata(TipoPannello.MENU));
@@ -68,14 +79,16 @@ public class ControllerGioco implements Observer {
                 });
     }
 
+    /**
+     * Metodo di inizializzazione Partita (Model e View)
+     */
     private void inizializzaPartita(Giocatore giocatore) {
 
         // una eventuale partita già in corso viene sovrascritta
         vista.getPannelloGioco().ifPresent(model::deleteObserver);
 
         model.iniziaPartita(giocatore);
-        
-        // Evitiamo chiamate nude al .get() di un Optional: si usa ifPresent
+
         model.getPartitaCorrente().ifPresent(nuovaPartita -> {
             vista.setPannelloGioco(
                     nuovaPartita.getGiocatore(),
@@ -87,24 +100,27 @@ public class ControllerGioco implements Observer {
             vista.getPannelloGioco().ifPresent(p -> {
                 // Aggiunge l'observer
                 nuovaPartita.addObserver(p);
-                
+
                 // Aggiungiamo anche il Controller stesso come observer per monitorare la fine della partita
                 nuovaPartita.addObserver(this);
-                
+
                 // Forza l'aggiornamento manuale della View per mostrare SUBITO la briscola e il mazzo a inizio partita
                 p.update(nuovaPartita, null);
-                
+
                 // Abilita esplicitamente il bottone se il turno iniziale è zero (Umano)
                 if (nuovaPartita.getNumeroTurno() == 0) {
                     p.getBottoneConferma().setEnabled(true);
                 }
             });
-            
+
             // Innesca i turni dei bot nel caso in cui il Random iniziale non abbia scelto l'Umano (0)
             nuovaPartita.eseguiTurniBot();
         });
     }
 
+    /**
+     * Metodo di inizializzazione bottoni pannello gioco
+     */
     private void inizializzaBottoniGioco() {
 
         /*
@@ -112,7 +128,7 @@ public class ControllerGioco implements Observer {
          */
         vista.getPannelloGioco().ifPresent(p -> {
             p.getBottoneMenu().addActionListener(e -> cambiaSchermata(Pannello.TipoPannello.MENU));
-    
+
             p.getBottoneConferma().addActionListener(e -> {
                 var cartaSelezionata = p.getCartaSelezionata();
                 if (cartaSelezionata != null) {
@@ -120,7 +136,7 @@ public class ControllerGioco implements Observer {
                         // Disabilita immediatamente il bottone per impedire input doppi 
                         // mentre il model esegue lo scarto e passa il turno al botNemico1
                         p.getBottoneConferma().setEnabled(false);
-                        
+
                         partita.scarta(partita.getGiocatore(), cartaSelezionata);
                     });
                 }
@@ -132,7 +148,6 @@ public class ControllerGioco implements Observer {
     /**
      * Metodo per visualizzare una determinata schermata del Gioco.
      * Utilizza il CardLayout della FinestraGioco per mostrare il pannello corretto.
-     * Complessità computazionale: O(1), le operazioni di Swing sono considerate costanti.
      *
      * @param schermata il TipoPannello del pannello da visualizzare.
      */
@@ -148,12 +163,12 @@ public class ControllerGioco implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (o instanceof PartitaBriscola partita) {
-            if (partita.getStato() == PartitaBriscola.StatoPartita.VINTA || 
-                partita.getStato() == PartitaBriscola.StatoPartita.PERSA) {
-                
+            if (partita.getStato() == PartitaBriscola.StatoPartita.VINTA ||
+                    partita.getStato() == PartitaBriscola.StatoPartita.PERSA) {
+
                 // La partita è finita, segnaliamo al modello principale (GiocoBriscola) di aggiornare le stats
                 model.terminaPartita();
-                
+
                 // Usiamo un piccolo ritardo per far vedere l'ultima presa prima di cambiare schermata
                 javax.swing.Timer timer = new javax.swing.Timer(1500, e -> {
                     cambiaSchermata(TipoPannello.STATISTICHE);

@@ -6,7 +6,7 @@ import java.util.Optional;
 /**
  * Modello principale del Gioco della Briscola.
  */
-@SuppressWarnings("deprecation") // java.util.Observable è deprecata da Java 9, si accetta per continuità con le view pre-esistenti
+@SuppressWarnings("deprecation")
 public class GiocoBriscola extends Observable {
     private int partiteGiocate;
     private int partiteVinte;
@@ -17,7 +17,6 @@ public class GiocoBriscola extends Observable {
     /**
      * Costruttore del modello del Gioco della Briscola.
      * Inizializza i campi con valori vuoti o di default.
-     * Complessità computazionale: O(1).
      */
     public GiocoBriscola() {
         giocatore = Optional.empty();
@@ -27,7 +26,6 @@ public class GiocoBriscola extends Observable {
 
     /**
      * Restituisce il numero totale di partite giocate.
-     * Complessità computazionale: O(1).
      *
      * @return il numero di partite giocate
      */
@@ -37,7 +35,6 @@ public class GiocoBriscola extends Observable {
 
     /**
      * Restituisce il numero di partite vinte dall'utente.
-     * Complessità computazionale: O(1).
      *
      * @return il numero di partite vinte
      */
@@ -47,7 +44,6 @@ public class GiocoBriscola extends Observable {
 
     /**
      * Restituisce il numero di partite perse dall'utente.
-     * Complessità computazionale: O(1).
      *
      * @return il numero di partite perse
      */
@@ -57,7 +53,6 @@ public class GiocoBriscola extends Observable {
 
     /**
      * Restituisce l'Optional contenente il giocatore, se presente.
-     * Complessità computazionale: O(1).
      *
      * @return un Optional che contiene il giocatore corrente
      */
@@ -67,7 +62,6 @@ public class GiocoBriscola extends Observable {
 
     /**
      * Restituisce l'Optional contenente la partita corrente.
-     * Complessità computazionale: O(1).
      *
      * @return un Optional che contiene la partita attualmente in corso
      */
@@ -78,7 +72,6 @@ public class GiocoBriscola extends Observable {
     /**
      * Metodo per creare e avviare una nuova partita. Se un'altra
      * partita era già in corso, viene sovrascritta.
-     * Complessità computazionale: O(1) in quanto viene creato un nuovo oggetto PartitaBriscola.
      *
      * @param giocatore il giocatore che partecipa alla partita
      */
@@ -94,14 +87,8 @@ public class GiocoBriscola extends Observable {
     /**
      * Metodo per terminare la partita corrente del Gioco.
      * Aggiorna le statistiche delle partite giocate e vinte, e notifica gli Observer.
-     * Complessità computazionale: O(1) per l'aggiornamento (più eventuali chiamate O(N) in cascata sui listener).
      */
     public void terminaPartita() {
-
-        /*
-         * l'azione passata a ifPresent viene eseguita solo se l'Optional
-         * partitaCorrente non è vuoto
-         */
         partitaCorrente.ifPresent(p -> {
             partiteGiocate++;
 
@@ -116,7 +103,6 @@ public class GiocoBriscola extends Observable {
     /**
      * Notifica gli observer di un avvenuto cambiamento nello stato.
      * Segna l'oggetto come "modificato" (setChanged) e chiama la superclasse.
-     * Complessità computazionale: O(N) dove N è il numero di Observer registrati.
      */
     @Override
     public void notifyObservers() {

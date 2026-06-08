@@ -9,9 +9,7 @@ import java.util.List;
 public class Bot extends Giocatore {
 
     /**
-     * Costruttore della classe Bot. Inizializza un Bot con nome, percorso
-     * dell'avatar e mano iniziale.
-     * Complessità computazionale: O(1) in quanto chiama semplicemente il costruttore della superclasse.
+     * Costruttore della classe Bot. Inizializza un Bot con nome, percorso dell'avatar e mano iniziale.
      *
      * @param nome   il nome del bot
      * @param avatar il percorso dell'immagine dell'avatar del bot
@@ -22,9 +20,7 @@ public class Bot extends Giocatore {
     }
 
     /**
-     * Costruttore della classe Bot. Inizializza un Bot con nome e mano iniziale,
-     * assegnandogli un avatar di default.
-     * Complessità computazionale: O(1) in quanto chiama l'altro costruttore della classe.
+     * Costruttore della classe Bot. Inizializza un Bot con nome e mano iniziale, assegnandogli un avatar di default.
      *
      * @param nome il nome del bot
      */

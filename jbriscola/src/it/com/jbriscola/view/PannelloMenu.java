@@ -19,7 +19,6 @@ public class PannelloMenu extends Pannello {
 
     /**
      * Costruttore base di PannelloMenu. Utilizza la grafica e il layout di default.
-     * Complessità computazionale: O(1).
      */
     public PannelloMenu() {
         this(GRAFICA_DEFAULT);
@@ -27,7 +26,6 @@ public class PannelloMenu extends Pannello {
 
     /**
      * Costruttore completo. Inizializza gli elementi grafici del menu principale.
-     * Complessità computazionale: O(1).
      *
      * @param graficaPannello l'oggetto contenente le impostazioni grafiche del pannello.
      */
@@ -44,6 +42,10 @@ public class PannelloMenu extends Pannello {
         add(creaPannelloPulsanti());
     }
 
+    /**
+     * Creazione del pannello Pulsanti
+     * @return Pannello con il titolo, i pulsanti Gioca e Statistiche
+     */
     private JPanel creaPannelloPulsanti() {
         JPanel p = new JPanel(new GridBagLayout());
         p.setOpaque(false); // Imposta il pannello come trasparente
@@ -58,7 +60,6 @@ public class PannelloMenu extends Pannello {
 
     /**
      * Restituisce la label usata per il titolo del gioco.
-     * Complessità computazionale: O(1).
      *
      * @return la JLabel del titolo.
      */
@@ -68,7 +69,6 @@ public class PannelloMenu extends Pannello {
 
     /**
      * Restituisce la label usata per l'immagine di sfondo del menu.
-     * Complessità computazionale: O(1).
      *
      * @return la JLabel con l'immagine di sfondo.
      */
@@ -78,7 +78,6 @@ public class PannelloMenu extends Pannello {
 
     /**
      * Restituisce il bottone per avviare il gioco.
-     * Complessità computazionale: O(1).
      *
      * @return il JButton Gioca.
      */
@@ -88,7 +87,6 @@ public class PannelloMenu extends Pannello {
 
     /**
      * Restituisce il bottone per visualizzare le statistiche.
-     * Complessità computazionale: O(1).
      *
      * @return il JButton Statistiche.
      */
@@ -98,15 +96,9 @@ public class PannelloMenu extends Pannello {
 
     /**
      * Sovrascrive il metodo update del pattern Observer.
-     * Il menu principale non necessita di aggiornamenti dinamici in risposta
-     * agli eventi del Model, pertanto il metodo è vuoto.
-     * Complessità computazionale: O(1).
-     *
-     * @param o l'oggetto Observable che ha notificato un cambiamento.
-     * @param arg argomenti extra (non usati).
+     * Non utilizzato
      */
     @Override
     public void update(Observable o, Object arg) {
-        // il menù non ha dati da aggiornare
     }
 }
