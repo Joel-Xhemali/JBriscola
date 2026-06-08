@@ -1,0 +1,432 @@
+@startuml
+title Diagramma di Classi Completo e Dettagliato (Merged) - Progetto JBriscola
+
+' === Impostazioni Grafiche ===
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam packageStyle rectangle
+hide empty members
+
+' === Package CONTROLLER ===
+package "Controller" <<Control>> {
+    class ControllerGioco implements java.util.Observer {
+        - model: GiocoBriscola
+        - vista: FinestraGioco
+        + ControllerGioco(GiocoBriscola, FinestraGioco)
+        - inizializzaBottoniMenu(): void
+        - inizializzaBottoniStatistiche(): void
+        - inizializzaBottoniGiocatore(): void
+        - inizializzaPartita(Giocatore): void
+        - inizializzaBottoniGioco(): void
+        + cambiaSchermata(TipoPannello): void
+        + update(Observable, Object): void
+    }
+}
+
+' === Package VIEW ===
+package "View" <<Desktop>> {
+    class FinestraGioco extends javax.swing.JFrame {
+        + {static} TITOLO: String
+        - pannelloGenerale: JPanel
+        - pannelloMenu: PannelloMenu
+        - pannelloStatistiche: PannelloStatistiche
+        - pannelloGiocatore: PannelloGiocatore
+        - pannelloGioco: Optional<PannelloGioco>
+        + FinestraGioco()
+        + getPannelloGenerale(): JPanel
+        + getPannelloMenu(): PannelloMenu
+        + getPannelloStatistiche(): PannelloStatistiche
+        + getPannelloGiocatore(): PannelloGiocatore
+        + getPannelloGioco(): Optional<PannelloGioco>
+        + setPannelloGioco(Giocatore): void
+        + visualizzaPannello(TipoPannello): void
+    }
+
+    abstract class Pannello extends javax.swing.JPanel implements java.util.Observer {
+        ~ grafica: GraficaPannello
+        - {static} coloreSfondoDefault: Color
+        + {static} GRAFICA_DEFAULT: GraficaPannello
+        + getGrafica(): GraficaPannello
+        # paintComponent(Graphics): void
+    }
+
+    enum TipoPannello {
+        MENU
+        STATISTICHE
+        GIOCO
+        GIOCATORE
+    }
+    Pannello +-- TipoPannello
+
+    class PannelloMenu extends Pannello {
+        - titolo: JLabel
+        - immagine: JLabel
+        - bottoneGioco: JButton
+        - bottoneStatistiche: JButton
+        - {static} nomeGioco: String
+        - {static} pathImmagine: String
+        - {static} indicazioneGioco: String
+        - {static} indicazioneStatistiche: String
+        - {static} layout: LayoutManager
+        - creaPannelloPulsanti(): JPanel
+        + getTitolo(): JLabel
+        + getImmagine(): JLabel
+        + getBottoneGioco(): JButton
+        + getBottoneStatistiche(): JButton
+        + update(Observable, Object): void
+    }
+
+    class PannelloStatistiche extends Pannello {
+        - titolo: JLabel
+        - statistiche: JLabel
+        - bottoneMenu: JButton
+        - {static} nomeSchermata: String
+        - {static} indicazioneMenu: String
+        - {static} indicazionePartiteGiocate: String
+        - {static} indicazionePartiteVinte: String
+        - {static} indicazioniPartitePerse: String
+        - {static} indicazionePartitePareggiate: String
+        - {static} layout: LayoutManager
+        - inizializzaPannelloStatistiche(): void
+        + getTitolo(): JLabel
+        + getStatistiche(): JLabel
+        + getBottoneMenu(): JButton
+        + {static} generaStatistiche(int, int, int): String
+        + update(Observable, Object): void
+    }
+
+    class PannelloGiocatore extends Pannello {
+        - titolo: JLabel
+        - campoNickname: JTextField
+        - bottoneConferma: JButton
+        - bottoneMenu: JButton
+        - pathAvatarSelezionato: String
+        - {static} nomeSchermata: String
+        - {static} indicazioneMenu: String
+        - {static} PATH: String
+        - {static} FILE_AVATAR: String[]
+        - void inizializzaPannello()
+        + getNickname(): String
+        + getPathAvatarSelezionato(): String
+        + getBottoneConferma(): JButton
+        + getBottoneMenu(): JButton
+        + update(Observable, Object): void
+    }
+
+    class PannelloGioco extends Pannello {
+        - bottoneMenu: JButton
+        - bottoneConferma: JButton
+        - numeroTurno: int
+        - puntiGiocatore: JLabel
+        - puntiNemici: JLabel
+        - vistaTavolo: JPanel
+        - carteTavolo: List<Carta>
+        - briscola: Carta
+        - mazzo: Mazzo
+        - vistaGiocatore: JPanel
+        - cartaSelezionata: Carta
+        - giocatoreUmano: Giocatore
+        - profiloUmano: PannelloProfilo
+        - vistaAlleato: JPanel
+        - botAlleato: Giocatore
+        - profiloAlleato: PannelloProfilo
+        - vistaSinistra: JPanel
+        - botNemico1: Giocatore
+        - profiloSinistra: PannelloProfilo
+        - vistaDestra: JPanel
+        - botNemico2: Giocatore
+        - profiloDestra: PannelloProfilo
+        - {static} PATH_RETRO_CARTE: String
+        - {static} INDICAZIONE_MENU: String
+        - {static} INDICAZIONE_CONFERMA: String
+        - {static} TEXT_PUNTI_GIOCATORE: String
+        - {static} TEXT_PUNTI_NEMICI: String
+        - cacheScalate: Map<String, BufferedImage>
+        - inizializzaPannello(Giocatore): void
+        - creaPannelloInferiore(): JPanel
+        - creaPannelloCentrale(): JPanel
+        - creaPannelloSuperiore(): JPanel
+        - creaPannelloSinistro(): JPanel
+        - creaPannelloDestro(): JPanel
+        - calcolaFattoreScala(): double
+        - aggiornaInterfaccia(): void
+        + disegnaCarteGiocatore(): void
+        + disegnaCarteAlleato(): void
+        - disegnaCarteNemico1(): void
+        - disegnaCarteNemico2(): void
+        - disegnaCarteVerticali(JPanel, Giocatore, int): void
+        + disegnaCarteTavolo(): void
+        - ottieniImmagineScalata(String, BufferedImage, int, int): BufferedImage
+        - ottieniImmagineRuotata(String, BufferedImage, int, int, int): BufferedImage
+        - creaImmagineRuotata(Image, int, int, int): BufferedImage
+        + getBottoneMenu(): JButton
+        + getBottoneConferma(): JButton
+        + getCartaSelezionata(): Carta
+        + setCartaSelezionata(Carta): void
+        + update(Observable, Object): void
+    }
+
+    class PannelloProfilo {
+        - avatarLabel: JLabel
+        - nomeLabel: JLabel
+        - giocatore: Giocatore
+        + aggiornaGrafica(int, int): void
+    }
+    PannelloGioco +-- PannelloProfilo
+
+    interface Colorabile {}
+    
+    class GraficaPannello {
+        + {static} TRASPARENTE: Color
+        + {static} ARANCIONE: Color
+        + {static} GIALLO: Color
+        + {static} VERDE_BRISCOLA: Color
+        + {static} BLU: Color
+        + {static} ROSSO: Color
+        + {static} CORSIVO: Font
+        - colori: Map<Colorabile, Color>
+        - fonts: Map<TipoTesto, Font>
+        + getColori(): Map<Colorabile, Color>
+        + creaCampoTesto(String): JTextField
+        + creaTitolo(String): JLabel
+        + creaTestoNormale(String): JLabel
+        + creaTestoNormale(String, Color): JLabel
+        - creaTesto(TipoTesto, String): JLabel
+        - creaTesto(TipoTesto, String, Color): JLabel
+        - creaTesto(String, Optional<Color>, Optional<Font>): JLabel
+        + creaBottone(String): JButton
+        - creaBottone(String, Optional<Color>, Optional<Color>, Optional<Font>): JButton
+        + creaImmagine(String): JLabel
+        + {static} generaDisposizione(int, int, int, int, int): GridBagConstraints
+        + {static} generaDisposizione(int, int, int, int, int, int, int): GridBagConstraints
+    }
+
+    enum TipoTesto {
+        TITOLO
+        NORMALE
+        BOTTONE
+    }
+    enum TipoSfondo {
+        PANNELLO
+        BOTTONE
+    }
+    GraficaPannello +-- TipoTesto
+    GraficaPannello +-- TipoSfondo
+    TipoTesto ..|> Colorabile
+    TipoSfondo ..|> Colorabile
+}
+
+' === Package MODEL ===
+package "Model" <<Database>> {
+    class GiocoBriscola extends java.util.Observable {
+        - partiteGiocate: int
+        - partiteVinte: int
+        - partitePerse: int
+        - giocatore: Optional<Giocatore>
+        - partitaCorrente: Optional<PartitaBriscola>
+        + getPartiteGiocate(): int
+        + getPartiteVinte(): int
+        + getPartitePerse(): int
+        + getGiocatore(): Optional<Giocatore>
+        + getPartitaCorrente(): Optional<PartitaBriscola>
+        + iniziaPartita(Giocatore): void
+        + terminaPartita(): void
+        + notifyObservers(): void
+    }
+
+    class PartitaBriscola extends java.util.Observable {
+        - gioco: GiocoBriscola
+        - stato: StatoPartita
+        - mazzo: Mazzo
+        - briscola: Carta
+        - cartaComanda: Carta
+        - giocatore: Giocatore
+        - botAlleato: Giocatore
+        - botNemico1: Giocatore
+        - botNemico2: Giocatore
+        - puntiGiocatore: int
+        - puntiNemici: int
+        - numeroTurno: int
+        - isAlleati: boolean
+        - carteSulTavolo: List<Carta>
+        + getGioco(): GiocoBriscola
+        + setGioco(GiocoBriscola): void
+        + getStato(): StatoPartita
+        + getGiocatore(): Giocatore
+        + getBotAlleato(): Giocatore
+        + getBotNemico1(): Giocatore
+        + getBotNemico2(): Giocatore
+        + getBriscola(): Carta
+        + getMazzo(): Mazzo
+        + getPuntiGiocatore(): int
+        + getPuntiNemici(): int
+        + getCarteSulTavolo(): List<Carta>
+        - calcolaPuntiSulTavolo(): int
+        + getNumeroTurno(): int
+        - distribuisciCarte(): void
+        + scarta(Giocatore, Carta): void
+        + eseguiTurniBot(): void
+        - sceltaCarta(Giocatore): Carta
+        - getGiocatoreDalTurno(int): Giocatore
+        - isAlleato(Giocatore): boolean
+        - risolviPresa(): void
+    }
+
+    enum StatoPartita {
+        IN_CORSO
+        TERMINATA
+        PERSA
+        VINTA
+        PAREGGIO
+    }
+    PartitaBriscola +-- StatoPartita
+
+    abstract class Giocatore {
+        - nome: String
+        - mano: List<Carta>
+        - avatar: String
+        - cartaScartata: Carta
+        + getNome(): String
+        + getMano(): List<Carta>
+        + setMano(List<Carta>): void
+        + pesca(Carta): void
+        + getCartaScartata(): Carta
+        + setCartaScartata(Carta): void
+        + getAvatar(): String
+        + toString(): String
+        + equals(Object): boolean
+        + hashCode(): int
+    }
+
+    class Umano extends Giocatore {}
+    class Bot extends Giocatore {}
+
+    class Carta {
+        - seme: Seme
+        - valore: Valore
+        - punto: int
+        - pathCarta: String
+        - {static} PATH_CARTE: String
+        + getSeme(): Seme
+        + getPuntiCarta(): int
+        + getForzaCarta(): int
+        + getPathCarta(): String
+        + toString(): String
+        + equals(Object): boolean
+        + hashCode(): int
+    }
+
+    enum Seme {
+        SPADE
+        COPPE
+        DENARI
+        BASTONI
+    }
+
+    enum Valore {
+        ASSO
+        TRE
+        RE
+        CAVALLO
+        FANTE
+        SETTE
+        SEI
+        CINQUE
+        QUATTRO
+        DUE
+        - punti: int
+        - forza: int
+        + getPunti(): int
+        + getForza(): int
+    }
+    Carta *-- Seme
+    Carta *-- Valore
+
+    class Mazzo {
+        - {static} instance: Mazzo
+        - carte: List<Carta>
+        + {static} getMazzo(): Mazzo
+        + {static} close(): void
+        + void mescola()
+        + pesca(): Carta
+        + pescaCarte(): List<Carta>
+        + isEmpty(): boolean
+        + toString(): String
+    }
+
+    class CacheImmagini {
+        - {static} cache: Map<String, BufferedImage>
+        + {static} BufferedImage getImmagine(String)
+    }
+
+    class GestoreNomiBot {
+        - PERCORSO: String
+        - nomiInMemoria: List<String>
+        - caricaDalClasspath(): void
+        + ottieniNomeCasuale(): String
+    }
+
+    class Utils {
+        + {static} PATH_AVATAR: String
+        + {static} PATH_NOMI: String
+        + {static} getPathAvatar(): String
+        + {static} estraiNome(): String
+    }
+
+    class AudioManager {
+        - {static} instance: AudioManager
+        + {static} getInstance(): AudioManager
+        + play(String): void
+    }
+}
+
+' === Entry Point ===
+class Main {
+    + {static} main(String[])
+}
+
+' === RELAZIONI E ARCHITETTURA ===
+
+' Architettura MVC
+ControllerGioco ..> GiocoBriscola : "usa"
+ControllerGioco ..> FinestraGioco : "usa"
+Main ..> ControllerGioco : "crea"
+Main ..> GiocoBriscola : "crea"
+Main ..> FinestraGioco : "crea"
+
+' Pattern Observer
+PartitaBriscola .up.> ControllerGioco : "notifica"
+PartitaBriscola .up.> PannelloGioco : "notifica"
+GiocoBriscola .up.> PannelloStatistiche : "notifica"
+Observable <|-- GiocoBriscola
+Observable <|-- PartitaBriscola
+
+' Composizione e Struttura della View
+FinestraGioco "1" *-- "1" PannelloMenu
+FinestraGioco "1" *-- "1" PannelloStatistiche
+FinestraGioco "1" *-- "1" PannelloGiocatore
+FinestraGioco "1" *-- "0..1" PannelloGioco
+Pannello <|-- PannelloMenu
+Pannello <|-- PannelloStatistiche
+Pannello <|-- PannelloGiocatore
+Pannello <|-- PannelloGioco
+Pannello o-- GraficaPannello
+javax.swing.JPanel <|-- Pannello
+javax.swing.JPanel <|-- PannelloProfilo
+
+' Composizione del Model
+GiocoBriscola "1" o-- "0..1" PartitaBriscola
+PartitaBriscola "1" *-- "4" Giocatore
+PartitaBriscola "1" *-- "1" Mazzo
+Mazzo "1" *-- "40" Carta
+Giocatore "1" o-- "0..3" Carta
+Giocatore <|-- Umano
+Giocatore <|-- Bot
+
+' Dipendenze Interne e Utilità
+PannelloGioco ..> CacheImmagini
+Bot ..> GestoreNomiBot
+PartitaBriscola ..> AudioManager : "usa"
+PannelloGiocatore ..> Utils : "usa"
+
+@enduml
