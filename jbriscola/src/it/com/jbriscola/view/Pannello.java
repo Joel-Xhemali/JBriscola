@@ -20,7 +20,7 @@ public abstract class Pannello extends JPanel implements Observer {
     }
 
     GraficaPannello grafica = new GraficaPannello();
-    private static Color coloreSfondoDefault = GraficaPannello.VERDE_CHIARO;
+    private static Color coloreSfondoDefault = GraficaPannello.VERDE_BRISCOLA;
 
     /**
      * GraficaPannello con:
@@ -28,9 +28,9 @@ public abstract class Pannello extends JPanel implements Observer {
      * Font Titolo "Stencil", bottone corsivo, testi "calibri Light"
      */
     public static final GraficaPannello GRAFICA_DEFAULT = new GraficaPannello(
-            Map.of(TipoSfondo.PANNELLO, GraficaPannello.VERDE_CHIARO, TipoSfondo.BOTTONE, GraficaPannello.GIALLO,
-                    TipoTesto.TITOLO, GraficaPannello.ARANCIONE),
-            Map.of(TipoTesto.TITOLO, new Font("Stencil", Font.PLAIN, 65), TipoTesto.BOTTONE, GraficaPannello.CORSIVO,
+            Map.of(TipoSfondo.PANNELLO, GraficaPannello.VERDE_BRISCOLA, TipoSfondo.BOTTONE, GraficaPannello.GIALLO,
+                    TipoTesto.TITOLO, GraficaPannello.BLU),
+            Map.of(TipoTesto.TITOLO, new Font("Stencil", Font.BOLD, 65), TipoTesto.BOTTONE, GraficaPannello.CORSIVO,
                     TipoTesto.NORMALE, new Font("Calibri Light", Font.PLAIN, 40)));
 
     /**
@@ -89,10 +89,7 @@ public abstract class Pannello extends JPanel implements Observer {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        int density = 5;
         g.setColor(grafica.getColori().getOrDefault(GraficaPannello.TipoSfondo.PANNELLO, coloreSfondoDefault));
-        for (int x = 0; x <= getWidth() + getHeight(); x += density) {
-            g.drawLine(x, 0, 0, x);
-        }
+        g.fillRect(0, 0, getWidth(), getHeight());
     }
 }

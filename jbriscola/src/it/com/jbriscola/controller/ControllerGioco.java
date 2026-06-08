@@ -1,14 +1,15 @@
 package it.com.jbriscola.controller;
 
-import it.com.jbriscola.model.Giocatore;
-import it.com.jbriscola.model.GiocoBriscola;
-import it.com.jbriscola.model.Umano;
+import it.com.jbriscola.model.*;
 import it.com.jbriscola.view.FinestraGioco;
 import it.com.jbriscola.view.Pannello;
 import it.com.jbriscola.view.Pannello.TipoPannello;
 
+import java.util.Observable;
+import java.util.Observer;
+
 @SuppressWarnings("deprecation")
-public class ControllerGioco {
+public class ControllerGioco implements Observer {
     private final GiocoBriscola model;
     private final FinestraGioco vista;
 
@@ -25,6 +26,7 @@ public class ControllerGioco {
     public ControllerGioco(GiocoBriscola gioco, FinestraGioco finestra) {
         model = gioco;
         vista = finestra;
+        AudioManager.getInstance().play("assets/1950s Jazz Classics.wav");
 
         /*
          * il pannello statistiche deve osservare il modello del gioco per avere
@@ -82,12 +84,21 @@ public class ControllerGioco {
                     nuovaPartita.getBotNemico2()
             );
 
-            vista.getPannelloGioco().ifPresent(nuovaPartita::addObserver);
-            
-            // Abilita esplicitamente il bottone se il turno iniziale è zero (Umano)
-            if (nuovaPartita.getNumeroTurno() == 0) {
-                vista.getPannelloGioco().ifPresent(p -> p.getBottoneConferma().setEnabled(true));
-            }
+            vista.getPannelloGioco().ifPresent(p -> {
+                // Aggiunge l'observer
+                nuovaPartita.addObserver(p);
+                
+                // Aggiungiamo anche il Controller stesso come observer per monitorare la fine della partita
+                nuovaPartita.addObserver(this);
+                
+                // Forza l'aggiornamento manuale della View per mostrare SUBITO la briscola e il mazzo a inizio partita
+                p.update(nuovaPartita, null);
+                
+                // Abilita esplicitamente il bottone se il turno iniziale è zero (Umano)
+                if (nuovaPartita.getNumeroTurno() == 0) {
+                    p.getBottoneConferma().setEnabled(true);
+                }
+            });
             
             // Innesca i turni dei bot nel caso in cui il Random iniziale non abbia scelto l'Umano (0)
             nuovaPartita.eseguiTurniBot();
@@ -128,5 +139,28 @@ public class ControllerGioco {
     public void cambiaSchermata(TipoPannello schermata) {
         vista.visualizzaPannello(schermata);
         vista.repaint();
+    }
+
+    /**
+     * Il controller ascolta i cambiamenti della partita per poter reagire
+     * ad un eventuale stato di VINTA o PERSA e reindirizzare alla view Statistiche.
+     */
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o instanceof PartitaBriscola partita) {
+            if (partita.getStato() == PartitaBriscola.StatoPartita.VINTA || 
+                partita.getStato() == PartitaBriscola.StatoPartita.PERSA) {
+                
+                // La partita è finita, segnaliamo al modello principale (GiocoBriscola) di aggiornare le stats
+                model.terminaPartita();
+                
+                // Usiamo un piccolo ritardo per far vedere l'ultima presa prima di cambiare schermata
+                javax.swing.Timer timer = new javax.swing.Timer(1500, e -> {
+                    cambiaSchermata(TipoPannello.STATISTICHE);
+                });
+                timer.setRepeats(false);
+                timer.start();
+            }
+        }
     }
 }

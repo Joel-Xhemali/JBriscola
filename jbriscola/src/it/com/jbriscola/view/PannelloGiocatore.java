@@ -19,7 +19,7 @@ public class PannelloGiocatore extends Pannello {
     // Lo stato della view: mantiene temporaneamente la selezione per passarla al Controller
     private String pathAvatarSelezionato = null;
 
-    private static final String nomeSchermata = "Crea Profilo";
+    private static final String nomeSchermata = "Giocatore";
     private static String indicazioneMenu = "Menù";
     // Path Avatar da scegliere
     private static final String PATH = "assets/avatar/";
@@ -45,7 +45,7 @@ public class PannelloGiocatore extends Pannello {
         super(new BorderLayout(20, 20), grafica);
         titolo = grafica.creaTitolo(nomeSchermata);
         campoNickname = grafica.creaCampoTesto("Nickname");
-        bottoneConferma = grafica.creaBottone("Conferma e Gioca");
+        bottoneConferma = grafica.creaBottone("Gioca");
         bottoneMenu = grafica.creaBottone(indicazioneMenu);
 
         inizializzaPannello();
@@ -114,27 +114,14 @@ public class PannelloGiocatore extends Pannello {
         pannelloCentro.add(pannelloAvatar);
         add(pannelloCentro, BorderLayout.CENTER);
 
-        // SUD: Bottone Conferma
-        add(new JPanel(new BorderLayout()) {
-            {
-                add(new JPanel() {
-                    {
-                        setOpaque(false);
-                        add(bottoneMenu);
-                    }
-                }, BorderLayout.EAST);
-                add(new JPanel() {
-                    {
-                        setOpaque(false);
-                        add(bottoneConferma);
-                    }
-                }, BorderLayout.CENTER);
-            }
-        }, BorderLayout.SOUTH);
+        JPanel p = new JPanel(new GridBagLayout());
+        p.setOpaque(false);
+        GridBagConstraints disp = GraficaPannello.generaDisposizione(4, 0, 2, 1, GridBagConstraints.CENTER);
+        p.add(bottoneConferma, disp);
+        disp = GraficaPannello.generaDisposizione(4, 0, 1, 1, GridBagConstraints.EAST);
+        p.add(bottoneMenu, disp);
+        add(p, BorderLayout.SOUTH);
     }
-
-    // --- I GETTER ---
-    // Il tuo Controller userà questi metodi per estrarre i dati quando l'utente preme "Conferma"
 
     /**
      * Recupera il nickname inserito dall'utente.
@@ -181,7 +168,7 @@ public class PannelloGiocatore extends Pannello {
      * Complessità computazionale: O(1).
      *
      * @param modello il modello da cui provengono gli aggiornamenti (GiocoBriscola).
-     * @param arg argomenti opzionali.
+     * @param arg     argomenti opzionali.
      */
     @Override
     public void update(Observable modello, Object arg) {

@@ -46,6 +46,7 @@ public class PannelloMenu extends Pannello {
 
     private JPanel creaPannelloPulsanti() {
         JPanel p = new JPanel(new GridBagLayout());
+        p.setOpaque(false); // Imposta il pannello come trasparente
         GridBagConstraints disp = GraficaPannello.generaDisposizione(0, 3, 1, 1, GridBagConstraints.SOUTH);
         p.add(titolo, disp);
         disp = GraficaPannello.generaDisposizione(0, 4, 1, 1, GridBagConstraints.CENTER);

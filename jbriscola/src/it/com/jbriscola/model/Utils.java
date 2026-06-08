@@ -11,7 +11,6 @@ import java.util.Random;
 public class Utils {
     public static final String PATH_AVATAR = "assets/avatar/";
     public static final String PATH_NOMI = "assets/nomiBot.txt";
-    public static final String PATH_RETRO_CARTA = "assets/retro_carta.png";
 
     /**
      * Metodo che legge la cartella "assets/avatar" e restituisce un avatar casuale.

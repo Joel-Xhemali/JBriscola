@@ -16,6 +16,8 @@ public class PannelloStatistiche extends Pannello {
     private static String indicazioneMenu = "Menù";
     private static String indicazionePartiteGiocate = "Partite giocate: ";
     private static String indicazionePartiteVinte = "Partite vinte: ";
+    private static String indicazioniPartitePerse = "Partite perse: ";
+    private static String indicazionePartitePareggiate = "Partite pareggiate: ";
     private static LayoutManager layout = new BorderLayout(50, 50);
 
     /**
@@ -37,7 +39,7 @@ public class PannelloStatistiche extends Pannello {
 
         super(layout, grafica);
         titolo = grafica.creaTitolo(nomeSchermata);
-        statistiche = grafica.creaTestoNormale(generaStatistiche(0, 0));
+        statistiche = grafica.creaTestoNormale(generaStatistiche(0, 0, 0));
         bottoneMenu = grafica.creaBottone(indicazioneMenu);
 
         inizializzaPannelloStatistiche();
@@ -45,25 +47,24 @@ public class PannelloStatistiche extends Pannello {
 
     private void inizializzaPannelloStatistiche() {
         setBorder(BorderFactory.createEmptyBorder(70, 70, 70, 70));
-        add(new JPanel() {
-            {
-                add(titolo);
-            }
-        }, BorderLayout.NORTH);
-        add(new JPanel() {
-            {
-                add(statistiche);
-            }
-        }, BorderLayout.CENTER);
-        add(new JPanel(new BorderLayout()) {
-            {
-                add(new JPanel() {
-                    {
-                        add(bottoneMenu);
-                    }
-                }, BorderLayout.EAST);
-            }
-        }, BorderLayout.SOUTH);
+        
+        JPanel pannelloTitolo = new JPanel();
+        pannelloTitolo.setOpaque(false);
+        pannelloTitolo.add(titolo);
+        add(pannelloTitolo, BorderLayout.NORTH);
+
+        JPanel pannelloStatistiche = new JPanel();
+        pannelloStatistiche.setOpaque(false);
+        pannelloStatistiche.add(statistiche);
+        add(pannelloStatistiche, BorderLayout.CENTER);
+
+        JPanel pannelloSud = new JPanel(new BorderLayout());
+        pannelloSud.setOpaque(false);
+        JPanel pannelloBottone = new JPanel();
+        pannelloBottone.setOpaque(false);
+        pannelloBottone.add(bottoneMenu);
+        pannelloSud.add(pannelloBottone, BorderLayout.EAST);
+        add(pannelloSud, BorderLayout.SOUTH);
     }
 
     /**
@@ -105,11 +106,12 @@ public class PannelloStatistiche extends Pannello {
      * @param partiteVinte   il numero delle partite vinte dal giocatore
      * @return la stringa formattata con le statistiche
      */
-    public static String generaStatistiche(int partiteGiocate, int partiteVinte) {
+    public static String generaStatistiche(int partiteGiocate, int partiteVinte, int partitePerse) {
         StringBuilder sb = new StringBuilder();
         sb.append("<html>" + indicazionePartiteGiocate + partiteGiocate + "<br>");
         sb.append(indicazionePartiteVinte + partiteVinte + "<br>");
-        sb.append("Partite perse: " + (partiteGiocate - partiteVinte) + "\n");
+        sb.append(indicazionePartitePareggiate + (partiteGiocate - (partiteVinte + partitePerse)) + "<br>");
+        sb.append(indicazioniPartitePerse + partitePerse + "\n");
         return sb.toString();
     }
 
@@ -128,6 +130,6 @@ public class PannelloStatistiche extends Pannello {
          * i dati sulle partite precedenti vengono aggiornati prendendo la versione più
          * recente dal modello
          */
-        statistiche.setText(generaStatistiche(g.getPartiteGiocate(), g.getPartiteVinte()));
+        statistiche.setText(generaStatistiche(g.getPartiteGiocate(), g.getPartiteVinte(), g.getPartitePerse()));
     }
 }

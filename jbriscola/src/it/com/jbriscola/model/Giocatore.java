@@ -1,6 +1,7 @@
 package it.com.jbriscola.model;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Classe astratta che rappresenta un giocatore che sia esso Umano o Artificiale
@@ -34,16 +35,6 @@ public abstract class Giocatore {
      */
     public String getNome() {
         return nome;
-    }
-
-    /**
-     * Imposta il nome del giocatore.
-     * Complessità computazionale: O(1).
-     *
-     * @param nome il nuovo nome da assegnare
-     */
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     /**
@@ -101,16 +92,6 @@ public abstract class Giocatore {
     }
 
     /**
-     * Imposta il percorso dell'immagine del profilo del giocatore.
-     * Complessità computazionale: O(1).
-     *
-     * @param avatar il percorso del nuovo avatar da assegnare
-     */
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    /**
      * Restituisce una stringa formattata con le informazioni principali del giocatore.
      * Complessità computazionale: O(N) dove N è il numero di carte in mano (a causa del toString di List).
      *
@@ -121,5 +102,32 @@ public abstract class Giocatore {
         return "nome='" + nome + '\'' +
                 ", mano=" + mano +
                 ", avatar='" + avatar + '\'';
+    }
+
+    /**
+     * Confronta questo giocatore con l'oggetto specificato per verificarne l'uguaglianza.
+     * Due giocatori sono considerati uguali se hanno lo stesso nome, la stessa mano,
+     * lo stesso avatar e la stessa carta scartata.
+     * Complessità computazionale: O(N) dove N è il numero di carte in mano.
+     *
+     * @param o l'oggetto da confrontare con questo giocatore
+     * @return true se l'oggetto è uguale a questo giocatore, false altrimenti
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Giocatore giocatore = (Giocatore) o;
+        return Objects.equals(nome, giocatore.nome) && Objects.equals(mano, giocatore.mano) && Objects.equals(avatar, giocatore.avatar) && Objects.equals(cartaScartata, giocatore.cartaScartata);
+    }
+
+    /**
+     * Calcola il valore hash per questo giocatore basandosi sui suoi attributi.
+     * Complessità computazionale: O(N) dove N è il numero di carte in mano.
+     *
+     * @return il valore hash calcolato
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(nome, mano, avatar, cartaScartata);
     }
 }

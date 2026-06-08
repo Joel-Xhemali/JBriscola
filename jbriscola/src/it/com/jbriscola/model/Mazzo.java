@@ -41,6 +41,10 @@ public class Mazzo {
         return instance;
     }
 
+    public static void close(){
+        instance = null;
+    }
+
     /**
      * Mescola il mazzo scambiando ogni carta con un'altra in posizione casuale.
      * Complessità computazionale: O(N) dove N è il numero totale di carte nel mazzo (40 iterazioni fisse).

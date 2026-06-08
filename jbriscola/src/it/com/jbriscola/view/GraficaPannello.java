@@ -15,14 +15,11 @@ public class GraficaPannello {
     public static final Color TRASPARENTE = new Color(0, 0, 0, 0);
     public static final Color ARANCIONE = Color.decode("#f08c00");
     public static final Color GIALLO = Color.decode("#ffec99");
-    public static final Color VERDE = Color.decode("#2f9e44");
-    public static final Color VERDE_CHIARO = Color.decode("#b2f2bb");
-    public static final Color AZZURRO = Color.decode("#a5d8ff");
-    public static final Color BLU = Color.decode("#1971c2");
-    public static final Color ROSSO = Color.decode("#e03131");
-    public static final Color ROSSO_CHIARO = Color.decode("#ffc9c9");
+    public static final Color VERDE_BRISCOLA = Color.decode("#1e995d");
+    public static final Color BLU = Color.decode("#1F0062");
+    public static final Color ROSSO = Color.decode("#68150A");
 
-    public static final Font CORSIVO = new Font("Segoe Script", Font.PLAIN, 30);
+    public static final Font CORSIVO = new Font("Segoe Script", Font.BOLD, 30);
 
     public enum TipoTesto implements Colorabile {
         TITOLO, NORMALE, BOTTONE
@@ -47,7 +44,7 @@ public class GraficaPannello {
      * Complessità computazionale: O(1).
      *
      * @param colori mappa dei colori associati ai componenti.
-     * @param fonts mappa dei font associati ai testi.
+     * @param fonts  mappa dei font associati ai testi.
      */
     public GraficaPannello(Map<Colorabile, Color> colori, Map<TipoTesto, Font> fonts) {
         this.colori = colori;
@@ -65,38 +62,6 @@ public class GraficaPannello {
     }
 
     /**
-     * Restituisce la mappa dei font.
-     * Complessità computazionale: O(1).
-     *
-     * @return la mappa dei font.
-     */
-    public Map<TipoTesto, Font> getFonts() {
-        return fonts;
-    }
-
-    /**
-     * Associa un colore a uno specifico tipo di componente grafico (testo o sfondo).
-     * Complessità computazionale: O(1).
-     *
-     * @param componente il tipo di componente.
-     * @param colore il colore da assegnare.
-     */
-    public void setColore(Colorabile componente, Color colore) {
-        colori.put(componente, colore);
-    }
-
-    /**
-     * Associa un font a uno specifico tipo di testo.
-     * Complessità computazionale: O(1).
-     *
-     * @param componente il tipo di testo.
-     * @param font il font da assegnare.
-     */
-    public void setFont(TipoTesto componente, Font font) {
-        fonts.put(componente, font);
-    }
-
-    /**
      * Crea un campo di testo (JTextField) formattato con il font di default.
      * Complessità computazionale: O(1).
      *
@@ -106,6 +71,7 @@ public class GraficaPannello {
     public JTextField creaCampoTesto(String defaultValue) {
         JTextField textField = new JTextField(defaultValue, 15);
         textField.setFont(CORSIVO);
+        textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         return textField;
     }
 
@@ -135,7 +101,7 @@ public class GraficaPannello {
      * Crea un'etichetta di testo normale con un colore specifico.
      * Complessità computazionale: O(1).
      *
-     * @param testo il contenuto dell'etichetta.
+     * @param testo  il contenuto dell'etichetta.
      * @param colore il colore del testo.
      * @return l'etichetta testuale colorata.
      */
@@ -149,10 +115,6 @@ public class GraficaPannello {
 
     private JLabel creaTesto(TipoTesto t, String contenuto, Color colore) {
         return creaTesto(contenuto, Optional.of(colore), Optional.ofNullable(fonts.get(t)));
-    }
-
-    private JLabel creaTesto(TipoTesto t, String contenuto, Font font) {
-        return creaTesto(contenuto, Optional.ofNullable(colori.get(t)), Optional.of(font));
     }
 
     private JLabel creaTesto(String contenuto, Optional<Color> colore, Optional<Font> font) {
@@ -174,20 +136,6 @@ public class GraficaPannello {
     public JButton creaBottone(String testo) {
         return creaBottone(testo, Optional.ofNullable(colori.get(TipoTesto.BOTTONE)),
                 Optional.ofNullable(colori.get(TipoSfondo.BOTTONE)), Optional.ofNullable(fonts.get(TipoTesto.BOTTONE)));
-    }
-
-    /**
-     * Crea un bottone con uno sfondo specifico.
-     * Complessità computazionale: O(1).
-     *
-     * @param testo l'etichetta del bottone.
-     * @param coloreSfondo il colore di sfondo del bottone.
-     * @return il bottone formattato.
-     */
-    public JButton creaBottone(String testo, Color coloreSfondo) {
-
-        return creaBottone(testo, Optional.ofNullable(colori.get(TipoTesto.BOTTONE)), Optional.of(coloreSfondo),
-                Optional.ofNullable(fonts.get(TipoTesto.BOTTONE)));
     }
 
     private JButton creaBottone(String testo, Optional<Color> coloreTesto, Optional<Color> coloreSfondo,
@@ -216,17 +164,6 @@ public class GraficaPannello {
     }
 
     /**
-     * Sostituisce l'immagine corrente all'interno di un'etichetta.
-     * Complessità computazionale: O(1).
-     *
-     * @param label l'etichetta in cui sostituire l'immagine.
-     * @param path il percorso della nuova immagine.
-     */
-    public void sostituisciImmagine(JLabel label, String path) {
-        label.setIcon(new ImageIcon(path));
-    }
-
-    /**
      * Genera e configura un oggetto GridBagConstraints per il posizionamento in un GridBagLayout.
      * Usa i pesi di default (weightx=1, weighty=1).
      * Complessità computazionale: O(1).
@@ -246,11 +183,11 @@ public class GraficaPannello {
      * Genera e configura un oggetto GridBagConstraints con parametri completi, compresi i pesi.
      * Complessità computazionale: O(1).
      *
-     * @param x colonna della griglia.
-     * @param y riga della griglia.
-     * @param w numero di colonne occupate.
-     * @param h numero di righe occupate.
-     * @param a ancoraggio.
+     * @param x  colonna della griglia.
+     * @param y  riga della griglia.
+     * @param w  numero di colonne occupate.
+     * @param h  numero di righe occupate.
+     * @param a  ancoraggio.
      * @param wx peso orizzontale.
      * @param wy peso verticale.
      * @return l'oggetto GridBagConstraints configurato.

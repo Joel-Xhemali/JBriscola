@@ -39,36 +39,6 @@ public class Carta {
     }
 
     /**
-     * Imposta un nuovo seme per la carta.
-     * Complessità computazionale: O(1).
-     *
-     * @param seme il nuovo seme da assegnare
-     */
-    public void setSeme(Seme seme) {
-        this.seme = seme;
-    }
-
-    /**
-     * Restituisce il valore facciale della carta.
-     * Complessità computazionale: O(1).
-     *
-     * @return il valore della carta
-     */
-    public Valore getValore() {
-        return valore;
-    }
-
-    /**
-     * Imposta un nuovo valore per la carta.
-     * Complessità computazionale: O(1).
-     *
-     * @param valore il nuovo valore da assegnare
-     */
-    public void setValore(Valore valore) {
-        this.valore = valore;
-    }
-
-    /**
      * Restituisce i punti attribuiti alla carta in base al suo valore in Briscola.
      * Complessità computazionale: O(1).
      *

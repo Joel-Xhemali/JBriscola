@@ -10,6 +10,7 @@ import java.util.Optional;
 public class GiocoBriscola extends Observable {
     private int partiteGiocate;
     private int partiteVinte;
+    private int partitePerse;
     private Optional<Giocatore> giocatore;
     private Optional<PartitaBriscola> partitaCorrente;
 
@@ -45,6 +46,16 @@ public class GiocoBriscola extends Observable {
     }
 
     /**
+     * Restituisce il numero di partite perse dall'utente.
+     * Complessità computazionale: O(1).
+     *
+     * @return il numero di partite perse
+     */
+    public int getPartitePerse() {
+        return partitePerse;
+    }
+
+    /**
      * Restituisce l'Optional contenente il giocatore, se presente.
      * Complessità computazionale: O(1).
      *
@@ -73,7 +84,6 @@ public class GiocoBriscola extends Observable {
      */
     public void iniziaPartita(Giocatore giocatore) {
         this.giocatore = Optional.of(giocatore);
-        System.out.println(giocatore);
 
         // Pattern Matching per instanceof (Java 16+)
         if (giocatore instanceof Umano umano) {
@@ -94,11 +104,11 @@ public class GiocoBriscola extends Observable {
          */
         partitaCorrente.ifPresent(p -> {
             partiteGiocate++;
-            // Uso di '==' invece di equals per gli Enum (più sicuro ed efficiente)
-            if (p.getStato() == PartitaBriscola.StatoPartita.VINTA) {
-                partiteVinte++;
-            }
-            notifyObservers(); // vengono aggiornate le statistiche nelle vista
+
+            if (p.getStato() == PartitaBriscola.StatoPartita.VINTA) partiteVinte++;
+            else if (p.getStato() == PartitaBriscola.StatoPartita.PERSA) partitePerse++;
+            notifyObservers();
+            Mazzo.close();
             partitaCorrente = Optional.empty();
         });
     }
