@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"it.com.jbriscola.controller"},{"l":"it.com.jbriscola.model"},{"l":"it.com.jbriscola.view"}];updateSearchResults();
