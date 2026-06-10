@@ -221,7 +221,6 @@ public class PartitaBriscola extends Observable {
         boolean supera = (cartaComanda == null) ||
                 (carta.getSeme() == briscola.getSeme() && (cartaComanda.getSeme() != briscola.getSeme() || carta.getForzaCarta() > cartaComanda.getForzaCarta())) ||
                 (carta.getSeme() == cartaComanda.getSeme() && carta.getForzaCarta() > cartaComanda.getForzaCarta());
-
         if (supera) {
             cartaComanda = carta;
             isAlleati = isAlleato(giocatore);
@@ -361,8 +360,7 @@ public class PartitaBriscola extends Observable {
             return punti.getLast();
         }
 
-        // Nel caso nessuno delle precedenti condizioni è vera allora devo scartare la carta
-        // con il minimo danno
+        // Nel caso nessuno delle precedenti condizioni è vera allora devo scartare la carta con il minimo danno
         if (!lisci.isEmpty()) return lisci.getFirst();
         if (!punti.isEmpty()) return punti.getFirst();
         if (!briscoleInutili.isEmpty()) return briscoleInutili.getFirst();
@@ -407,6 +405,8 @@ public class PartitaBriscola extends Observable {
     private void risolviPresa() {
         int giocatoreWin = 0;
         int sommaPunti = 0;
+
+        // trovo il giocatore che ha vinto la mano
         for (int i = 0; i < 4; i++) {
             Carta cartaScartata = getGiocatoreDalTurno(i).getCartaScartata();
             sommaPunti += cartaScartata.getPuntiCarta();
@@ -416,6 +416,7 @@ public class PartitaBriscola extends Observable {
             }
         }
 
+        // Calcolo i putni
         if (giocatoreWin == 0 || giocatoreWin == 2) this.puntiGiocatore += sommaPunti;
         else this.puntiNemici += sommaPunti;
 
@@ -423,6 +424,7 @@ public class PartitaBriscola extends Observable {
         cartaComanda = null;
         numeroTurno = giocatoreWin;
 
+        // Controllo se la partita è finita
         if (mazzo.isEmpty()) {
             if (getGiocatoreDalTurno(numeroTurno).getMano().isEmpty()) {
                 Mazzo.close();
@@ -432,7 +434,7 @@ public class PartitaBriscola extends Observable {
                     else stato = StatoPartita.VINTA;
                     gioco.terminaPartita();
                 } else {
-                    // Mazzo
+                    // Cambio il mazzo
                     mazzo = Mazzo.getMazzo();
                     this.briscola = mazzo.pesca();
 

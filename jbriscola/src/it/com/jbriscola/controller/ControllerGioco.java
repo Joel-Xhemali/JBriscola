@@ -100,8 +100,6 @@ public class ControllerGioco implements Observer {
             vista.getPannelloGioco().ifPresent(p -> {
                 // Aggiunge l'observer
                 nuovaPartita.addObserver(p);
-
-                // Aggiungiamo anche il Controller stesso come observer per monitorare la fine della partita
                 nuovaPartita.addObserver(this);
 
                 // Forza l'aggiornamento manuale della View per mostrare SUBITO la briscola e il mazzo a inizio partita
@@ -122,10 +120,7 @@ public class ControllerGioco implements Observer {
      * Metodo di inizializzazione bottoni pannello gioco
      */
     private void inizializzaBottoniGioco() {
-
-        /*
-         * Eseguiamo il blocco in sicurezza usando l'operatore funzionale ifPresent
-         */
+        // Eseguiamo il blocco in sicurezza usando l'operatore funzionale ifPresent
         vista.getPannelloGioco().ifPresent(p -> {
             p.getBottoneMenu().addActionListener(e -> cambiaSchermata(Pannello.TipoPannello.MENU));
 
@@ -166,7 +161,7 @@ public class ControllerGioco implements Observer {
             if (partita.getStato() == PartitaBriscola.StatoPartita.VINTA ||
                     partita.getStato() == PartitaBriscola.StatoPartita.PERSA) {
 
-                // La partita è finita, segnaliamo al modello principale (GiocoBriscola) di aggiornare le stats
+                // La partita è finita, segnaliamo al modello principale (GiocoBriscola) di aggiornare le statistiche
                 model.terminaPartita();
 
                 // Usiamo un piccolo ritardo per far vedere l'ultima presa prima di cambiare schermata
